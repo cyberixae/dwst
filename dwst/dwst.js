@@ -36,43 +36,77 @@ function range(a, b = null) {
   return Array(length).fill().map((_, i) => start + i);
 }
 
+class EchoServer {
+
+  constructor() {
+    this._socket = null;
+  }
+
+  onconnect(socket) {
+    this._socket = socket;
+  }
+
+  onmessage(message) {
+    if (typeof message === 'string') {
+      this._socket.send(message);
+      return;
+    }
+    if (message instanceof ArrayBuffer) {
+      this._socket.send(new Blob([new Uint8Array(message)]));
+      return;
+    }
+    throw new Error('Unexpected message type');
+  }
+
+}
+
 class FakeSocket {
-  constructor(url) {
-    this.url = url;
+
+  constructor(url, protocols = [], rtt=2000) {
+    this._rtt = rtt;
     this.protocol = '';
-    this.readyState = 1;
-    this._path = url.split('//').pop();
+    this.readyState = 0;
+    const serverType = url.split('//').pop().split('/').shift();
+    const ServerConstructor = (() => {
+      if (serverType === 'echo') {
+        return EchoServer;
+      }
+    })();
+    this._server = new ServerConstructor();
+    const serverSocket = {
+      send: (data) => {
+        window.setTimeout(() => {
+          this.onmessage({
+            data,
+          });
+        }, rtt / 2;
+      },
+    }
     window.setTimeout(() => {
-      this.onopen();
-    }, 0);
+      this._server.onconnect(serverSocket);
+      window.setTimeout(() => {
+        this.readyState = 1;
+        this.onopen();
+      }, rtt / 2);
+    }, rtt / 2);
   }
 
   send(message) {
-    if (this._path === 'echo') {
-      const data = (() => {
-        if (typeof message === 'string') {
-          return message;
-        }
-        if (message instanceof ArrayBuffer) {
-          return new Blob([new Uint8Array(message)]);
-        }
-        throw new Error('Unexpected message type');
-      })();
-      window.setTimeout(() => {
-        this.onmessage({
-          data,
-        });
-      }, 0);
-    }
+    window.setTimeout(() => {
+      this._server.onmessage(message);
+    }, this._rtt / 2);
   }
 
   close() {
-    this.readyState = 3;
-    this.onclose({
-      code: 1000,
-      reason: '',
-    });
+    window.setTimeout(() => {
+      this.readyState = 3;
+      this.onclose({
+        code: 1000,
+        reason: '',
+      });
+    }, this._rtt);
   }
+
 }
 
 class Connection {
