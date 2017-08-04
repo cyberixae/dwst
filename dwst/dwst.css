@@ -19,8 +19,8 @@ William Orr <will@worrbase.com>, US 2012
   --dwst-color-white: #fffefd;
   --dwst-color-white--af: #fff;
 
-  --dwst-color-blue: #27b;
-  --dwst-color-blue--light: #77c;
+  --dwst-color-blue: #77c;
+  --dwst-color-blue--light: #7bf;
   --dwst-color-cyan: #6ab;
   --dwst-color-cyan--light: #3ef;
   --dwst-color-green: #464;
@@ -366,7 +366,7 @@ body
 
 .dwst-direction--sent
 {
-  color: var(--dwst-color-blue--light);
+  color: var(--dwst-color-blue);
 }
 
 .dwst-direction--received
@@ -412,7 +412,7 @@ body
   color: var(--dwst-color-black--af);
 }
 .dwst-gfx__element--color-1 {
-  color: var(--dwst-color-blue);
+  color: var(--dwst-color-blue--light);
 }
 .dwst-gfx__element--color-2 {
   color: var(--dwst-color-green);
@@ -443,7 +443,7 @@ body
   color: var(--dwst-color-black);
 }
 .dwst-gfx__element--color-b {
-  color: var(--dwst-color-blue--light);
+  color: var(--dwst-color-blue);
 }
 .dwst-gfx__element--color-c {
   color: var(--dwst-color-green--light);
