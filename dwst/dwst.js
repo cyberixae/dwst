@@ -2475,7 +2475,12 @@ function init() {
   refreshclock();
   document.getElementById('clock1').removeAttribute('style');
   setInterval(refreshclock, 500);
-  silent('/splash');
+  const fragment = window.location.hash;
+  if (fragment.startsWith('#') && fragment.length > 1) {
+    loud(`/help ${fragment}`);
+  } else {
+    silent('/splash');
+  }
 
   window.addEventListener('resize', throttledUpdateGfxPositions);
 
