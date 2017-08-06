@@ -1737,6 +1737,9 @@ class Disconnect {
   }
 
   run() {
+    if (connection === null) {
+      log('No connection to disconnect', 'warning');
+    }
     const protocol = [];
     mlog([`Closing connection to ${connection.url}`].concat(protocol), 'system');
     connection.close();
