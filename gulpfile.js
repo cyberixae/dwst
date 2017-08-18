@@ -1,4 +1,17 @@
-'use strict';
+
+/**
+
+  Authors: Toni Ruottu, Finland 2010-2017
+
+  This file is part of Dark WebSocket Terminal.
+
+  CC0 1.0 Universal, http://creativecommons.org/publicdomain/zero/1.0/
+
+  To the extent possible under law, Dark WebSocket Terminal developers have waived all
+  copyright and related or neighboring rights to Dark WebSocket Terminal.
+
+*/
+
 
 /* global require */
 
@@ -16,6 +29,7 @@ const fse = require('fs-extra');
 const postcss = require('gulp-postcss');
 const atImport = require('postcss-import');
 const rename = require('gulp-rename');
+const replace = require('gulp-replace');
 
 gulp.task('jsonlint', () => {
   return gulp.src(['**/*.json', '.htmlhintrc', '!node_modules/**'])
@@ -40,12 +54,7 @@ gulp.task('validate', ['jsonlint', 'eslint', 'htmlhint']);
 
 gulp.task('test', ['validate']);
 
-gulp.task('sync-css', () => {
-  return gulp.src(['dwst/**/*.css'])
-    .pipe(browserSync.stream());
-});
-
-gulp.task('browser-sync', () => {
+gulp.task('browser-sync', ['build'], () => {
   browserSync.init({
     server: {
       baseDir: 'dwst',
@@ -57,10 +66,10 @@ gulp.task('browser-sync', () => {
   });
   gulp.watch('dwst/manifest.json', ['build-manifest', 'sync-manifest']);
   gulp.watch('dwst/dwst.html', ['build-html', 'sync-html']);
-  gulp.watch('dwst/**/*.png', ['build-images', 'sync-images']);
-  gulp.watch('dwst/**/*.ico', ['build-images', 'sync-images']);
-  gulp.watch('dwst/**/*.js', ['build-js', 'sync-js']);
-  gulp.watch('dwst/**/*.css', ['build-css', 'sync-css']);
+  gulp.watch('dwst/images/*.png', ['build-images', 'sync-images']);
+  gulp.watch('dwst/images/*.ico', ['build-images', 'sync-images']);
+  gulp.watch('dwst/scripts/*.js', ['build-js', 'sync-js']);
+  gulp.watch('dwst/styles/*.css', ['build-css', 'sync-css']);
 });
 
 gulp.task('dev', ['browser-sync']);
@@ -71,48 +80,51 @@ gulp.task('clean', () => {
 });
 
 gulp.task('sync-css', () => {
-  return gulp.src('dwst/**/*.css')
+  return gulp.src('dwst/styles/*.css')
     .pipe(browserSync.stream());
 });
 
 gulp.task('build-css', () => {
-  return gulp.src('dwst/dwst.css')
+  return gulp.src('dwst/styles/dwst.css')
     .pipe(postcss([
       atImport(),
     ]))
-    .pipe(gulp.dest('build/'))
+    .pipe(gulp.dest('build/styles/'))
     .pipe(rename(p => {
-      p.dirname = path.join('build', p.dirname);
+      p.dirname = path.join('build/styles', p.dirname);
     }))
     .pipe(browserSync.stream());
 });
 
 gulp.task('sync-js', () => {
-  return gulp.src('dwst/**/*.js')
+  return gulp.src('dwst/scripts/*.js')
     .pipe(browserSync.stream());
 });
 
 gulp.task('build-js', () => {
-  return gulp.src('dwst/dwst.js')
+  return gulp.src('dwst/scripts/dwst.js')
     .pipe(webpackStream({
       output: {
         filename: 'dwst.js',
       },
     }, webpack2))
-    .pipe(gulp.dest('build/'))
+    .pipe(gulp.dest('build/scripts/'))
     .pipe(rename(p => {
-      p.dirname = path.join('build', p.dirname);
+      p.dirname = path.join('build/scripts', p.dirname);
     }))
     .pipe(browserSync.stream());
 });
 
 gulp.task('sync-html', () => {
-  return gulp.src('dwst/**/*.html')
+  return gulp.src('dwst/dwst.html')
     .pipe(browserSync.stream());
 });
 
 gulp.task('build-html', () => {
+  // We bundle javascript with webpack for production builds
+  // So we should be fine without the module system
   return gulp.src('dwst/dwst.html')
+    .pipe(replace('<script type="module"', '<script'))
     .pipe(gulp.dest('build/'))
     .pipe(rename(p => {
       p.dirname = path.join('build', p.dirname);
@@ -121,15 +133,15 @@ gulp.task('build-html', () => {
 });
 
 gulp.task('sync-images', () => {
-  return gulp.src(['dwst/**/*.png', 'dwst/**/*.ico'])
+  return gulp.src(['dwst/images/*.png', 'dwst/images/*.ico'])
     .pipe(browserSync.stream());
 });
 
 gulp.task('build-images', () => {
-  return gulp.src(['dwst/**/*.png', 'dwst/**/*.ico'])
-    .pipe(gulp.dest('build/'))
+  return gulp.src(['dwst/images/*.png', 'dwst/images/*.ico'])
+    .pipe(gulp.dest('build/images'))
     .pipe(rename(p => {
-      p.dirname = path.join('build', p.dirname);
+      p.dirname = path.join('build/images', p.dirname);
     }))
     .pipe(browserSync.stream());
 });
