@@ -331,7 +331,7 @@ export default class Terminal {
     const time = currenttime();
     const logLine = document.createElement('div');
     logLine.setAttribute('class', `dwst-logline dwst-logline--${type}`);
-    logLine.innerHTML = `<span class="dwst-logline__item time">${time}</span><span class="dwst-logline__item dwst-direction dwst-direction--${type}">${type}:</span>`;
+    logLine.innerHTML = `<span class="dwst-logline__item dwst-time">${time}</span><span class="dwst-logline__item dwst-direction dwst-direction--${type}">${type}:</span>`;
     const outputCell = document.createElement('span');
     outputCell.setAttribute('class', 'dwst-logline__item dwst-mlog');
     lineElements.forEach(lineElement => {
