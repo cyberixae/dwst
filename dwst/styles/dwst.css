@@ -80,13 +80,6 @@ input[type="text"] {
   padding-right: 1em;
 }
 
-.bar2 {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: var(--dwst-bar-height);
-}
 .dwst-mlog__help-link-wrapper--nowrap {
   white-space: nowrap;
 }
