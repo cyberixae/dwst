@@ -333,12 +333,13 @@ export default class Terminal {
     logLine.setAttribute('class', `dwst-logline dwst-logline--${type}`);
     logLine.innerHTML = `<span class="dwst-logline__item time">${time}</span><span class="dwst-logline__item dwst-direction dwst-direction--${type}">${type}:</span>`;
     const outputCell = document.createElement('span');
-    outputCell.setAttribute('class', 'dwst-logline__item dwst-logline__item--main preserved');
+    outputCell.setAttribute('class', 'dwst-logline__item dwst-mlog');
     lineElements.forEach(lineElement => {
       lineElement.forEach(segmentElement => {
         outputCell.appendChild(segmentElement);
       });
       const br = document.createElement('br');
+      br.setAttribute('class', 'dwst-mlog__br');
       outputCell.appendChild(br);
     });
     logLine.appendChild(outputCell);
