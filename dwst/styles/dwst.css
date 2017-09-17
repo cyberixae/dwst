@@ -13,6 +13,7 @@
 */
 
 @import '_variables.css';
+@import '_layout.css';
 
 body {
   margin: 0;
@@ -58,10 +59,6 @@ input[type="text"] {
 }
 
 .consolebar {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: var(--dwst-bar-height);
   background-color: var(--dwst-color-gray-2);
 }
 
@@ -197,58 +194,7 @@ input[type="text"] {
   background: var(--dwst-color-wtf2);
 }
 
-.dwst-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: var(--dwst-bar-height);
-  width: 42ch;
-  max-width: 100%;
-}
-@media only screen and (min-width: 600px) {
-  .dwst-background {
-    width: 74ch;
-  }
-}
-@media screen and (min-width: 750px) {
-  .dwst-background {
-    width: 110ch;
-  }
-}
-.dwst-debug .dwst-background {
-  background-color: var(--dwst-color-debug-orange);
-}
-
-.dwst-background__content-area {
-  position: absolute;
-  top: 0;
-  left: 2ch;
-  right: 0;
-  bottom: 0;
-  width: 38ch;
-  max-width: 100%;
-}
-@media only screen and (min-width: 600px) {
-  .dwst-background__content-area {
-    width: 70ch;
-  }
-}
-@media screen and (min-width: 750px) {
-  .dwst-background__content-area {
-    left: 20ch;
-  }
-}
-.dwst-debug .dwst-background__content-area {
-  background-color: var(--dwst-color-debug-brown);
-}
-
 #screen1 {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: var(--dwst-bar-height);
   overflow: hidden;
   overflow-y: scroll;
   vertical-align: top;
@@ -499,10 +445,6 @@ input[type="text"] {
 }
 
 .dwst-notification {
-  position: absolute;
-  bottom: calc(var(--dwst-bar-height));
-  left: 0;
-  right: 0;
   height: var(--dwst-bar-height);
   line-height: var(--dwst-bar-height);
   text-align: center;
