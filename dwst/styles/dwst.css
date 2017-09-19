@@ -25,6 +25,9 @@
 @import '_log.css';
 @import '_log-entry.css';
 @import '_text-input.css';
+@import '_bar.css';
+@import '_prompt.css';
+@import '_button.css';
 
 body {
   margin: 0;
@@ -39,53 +42,4 @@ body {
   body {
     font-size: 10pt;
   }
-}
-
-.button {
-  width: auto;
-  padding: 0 1em 0 0;
-}
-
-.consolebar input[type="button"] {
-  padding: 0;
-  width: 5em;
-}
-
-.consolebar {
-  background-color: var(--dwst-color-gray-2);
-}
-
-.consolebar .leftpad {
-  padding-left: 1em;
-}
-
-.consolebar .rightpad {
-  padding-right: 1em;
-}
-
-.splash-button {
-  position: relative;
-  top: -3px;
-  height: 26px;
-  width: 48px;
-  background-image: url('../images/minilogo.png');
-}
-.splash-button:hover {
-  background-image: url('../images/minilogo-hover.png');
-  cursor: pointer;
-}
-.send-button {
-  position: relative;
-  top: 0;
-  height: 26px;
-  width: 26px;
-  background-image: url('../images/return.png');
-}
-.send-button:hover {
-  background-image: url('../images/return-hover.png');
-  cursor: pointer;
-}
-.input-holder {
-  width: 100%;
-  padding-right: 0.2em;
 }
