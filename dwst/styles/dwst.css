@@ -24,6 +24,7 @@
 @import '_scrollarea.css';
 @import '_log.css';
 @import '_log-entry.css';
+@import '_text-input.css';
 
 body {
   margin: 0;
@@ -43,22 +44,6 @@ body {
 .button {
   width: auto;
   padding: 0 1em 0 0;
-}
-input[type="text"] {
-  background-color: var(--dwst-color-gray-4);
-  color: var(--dwst-color-white);
-  font-family: monospace;
-  border: thin solid var(--dwst-color-red);
-}
-
-.bar2 input[type="text"] {
-  background-color: var(--dwst-color-gray-1);
-  border-width: 0;
-  width: 100%;
-  outline: none;
-}
-.bar2 input[type="text"]:active {
-  border-width: 0;
 }
 
 .consolebar input[type="button"] {
