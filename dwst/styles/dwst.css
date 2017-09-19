@@ -14,32 +14,19 @@
 
 @import '_variables.css';
 @import '_scrollbar.css';
-@import '_layout.css';
-@import '_notification.css';
-@import '_bytegrid.css';
-@import '_gfx.css';
-@import '_direction.css';
-@import '_mlog.css';
-@import '_time.css';
-@import '_scrollarea.css';
-@import '_log.css';
-@import '_log-entry.css';
-@import '_text-input.css';
-@import '_bar.css';
-@import '_prompt.css';
-@import '_button.css';
+@import '_base.css';
 
-body {
-  margin: 0;
-  font-family: monospace;
-  font-size: 3.9vw;
-  height: 100%;
-  background-color: var(--dwst-color-black);
-  color: var(--dwst-color-gray--light);
-  font-family: monospace;
-}
-@media only screen and (min-width: 500px) {
-  body {
-    font-size: 10pt;
-  }
-}
+@import '_bar.css';
+@import '_button.css';
+@import '_bytegrid.css';
+@import '_direction.css';
+@import '_gfx.css';
+@import '_layout.css';
+@import '_log-entry.css';
+@import '_log.css';
+@import '_mlog.css';
+@import '_notification.css';
+@import '_prompt.css';
+@import '_scrollarea.css';
+@import '_text-input.css';
+@import '_time.css';
