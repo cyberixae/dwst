@@ -254,9 +254,9 @@ export default class Terminal {
             const textChunks = utils.divissimo(rawText, 4);
 
             const byteGrid = document.createElement('div');
-            const byteGridClasses = ['dwst-bytegrid'];
+            const byteGridClasses = ['dwst-byte-grid'];
             if (hexChunks.length < 3) {
-              byteGridClasses.push('dwst-bytegrid--less-than-three');
+              byteGridClasses.push('dwst-byte-grid--less-than-three');
             }
             byteGrid.setAttribute('class', byteGridClasses.join(' '));
 
@@ -268,13 +268,13 @@ export default class Terminal {
 
               const hexContent = this._htmlescape(hexChunk.join(' '));
               const hexItem = document.createElement('div');
-              hexItem.setAttribute('class', 'dwst-bytegrid__item');
+              hexItem.setAttribute('class', 'dwst-byte-grid__item');
               hexItem.innerHTML = hexContent;
               byteGrid.appendChild(hexItem);
 
               const textContent = this._htmlescape(textChunk.join('').padEnd(chunkLength));
               const textItem = document.createElement('div');
-              textItem.setAttribute('class', 'dwst-bytegrid__item');
+              textItem.setAttribute('class', 'dwst-byte-grid__item');
               textItem.innerHTML = textContent;
               byteGrid.appendChild(textItem);
             });

@@ -13,12 +13,12 @@
 */
 
 @import '_variables.css';
-@import '_scrollbar.css';
+@import '_scrollbars.css';
 @import '_base.css';
 
 @import '_bar.css';
 @import '_button.css';
-@import '_bytegrid.css';
+@import '_byte-grid.css';
 @import '_direction.css';
 @import '_gfx.css';
 @import '_layout.css';
@@ -27,6 +27,6 @@
 @import '_mlog.css';
 @import '_notification.css';
 @import '_prompt.css';
-@import '_scrollarea.css';
+@import '_scroll-area.css';
 @import '_text-input.css';
 @import '_time.css';
