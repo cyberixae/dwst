@@ -22,6 +22,8 @@
 @import '_mlog.css';
 @import '_time.css';
 @import '_scrollarea.css';
+@import '_log.css';
+@import '_log-entry.css';
 
 body {
   margin: 0;
@@ -101,40 +103,4 @@ input[type="text"] {
 .input-holder {
   width: 100%;
   padding-right: 0.2em;
-}
-
-/* clean ********************************************************************/
-
-.dwst-logclear {
-  float: left;
-  height: calc(100vh - var(--dwst-bar-height));
-}
-
-.dwst-logline {
-  padding: 0 1ch;
-  display: grid;
-  grid-template-columns: 1ch calc(100% - 2ch);
-  grid-column-gap: 1ch;
-}
-.dwst-logline--command {
-  margin-top: 1ch;
-}
-
-.dwst-logline__item {
-  vertical-align: top;
-}
-
-@media screen and (min-width: 750px) {
-  .dwst-logline {
-    grid-template-columns: 8ch 10ch calc(100% - 8ch - 10ch - 2 * 1ch);
-  }
-}
-
-.dwst-logline__item.dwst-time {
-  display: none;
-}
-@media screen and (min-width: 750px) {
-  .dwst-logline__item.dwst-time {
-    display: initial;
-  }
 }

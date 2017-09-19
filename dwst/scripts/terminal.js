@@ -130,7 +130,7 @@ export default class Terminal {
 
   clearLog() {
     const logClear = document.createElement('div');
-    logClear.setAttribute('class', 'dwst-logclear');
+    logClear.setAttribute('class', 'dwst-log__clear');
     this.addLogLine(logClear);
   }
 
@@ -152,7 +152,7 @@ export default class Terminal {
     });
 
     const gfxContainer = document.createElement('div');
-    gfxContainer.setAttribute('class', 'dwst-gfx');
+    gfxContainer.setAttribute('class', 'dwst-log__item dwst-log__item--gfx dwst-gfx');
     gfxContainer.setAttribute('aria-hidden', 'true');
     gfxContainer.appendChild(gfxContent);
 
@@ -330,10 +330,10 @@ export default class Terminal {
     });
     const time = currenttime();
     const logLine = document.createElement('div');
-    logLine.setAttribute('class', `dwst-logline dwst-logline--${type}`);
-    logLine.innerHTML = `<span class="dwst-logline__item dwst-time">${time}</span><span class="dwst-logline__item dwst-direction dwst-direction--${type}">${type}:</span>`;
+    logLine.setAttribute('class', `dwst-log__item dwst-log__item--${type} dwst-log-entry`);
+    logLine.innerHTML = `<span class="dwst-log-entry__time dwst-time">${time}</span><span class="dwst-log-entry__direction dwst-direction dwst-direction--${type}">${type}:</span>`;
     const outputCell = document.createElement('span');
-    outputCell.setAttribute('class', 'dwst-logline__item dwst-mlog');
+    outputCell.setAttribute('class', 'dwst-log-entry__content dwst-mlog');
     lineElements.forEach(lineElement => {
       lineElement.forEach(segmentElement => {
         outputCell.appendChild(segmentElement);
