@@ -1,6 +1,7 @@
 {
   "plugins": [
-    "stylelint-no-unsupported-browser-features"
+    "stylelint-no-unsupported-browser-features",
+    "stylelint-selector-bem-pattern"
   ],
   "rules": {
     "indentation": 2,
@@ -197,6 +198,15 @@
         "viewport-units",
         "outline"
       ]
-    }]
+    }],
+    "plugin/selector-bem-pattern": {
+      "preset": "suit",
+      "componentName": /^lol$/,
+
+      "presetOptions": {
+        "namespace": "twt"
+      }
+    }
+
   }
 }
