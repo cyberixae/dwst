@@ -201,7 +201,7 @@
     }],
     "plugin/selector-bem-pattern": {
       "preset": "suit",
-      "componentName": /^lol$/,
+      "componentName": "/^lol$/",
 
       "presetOptions": {
         "namespace": "twt"
