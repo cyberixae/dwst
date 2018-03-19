@@ -33,15 +33,10 @@ Styleguide 2
 @import '_mlog.css';
 @import '_gfx.css';
 
-/*
-Todo
-
-Styleguide 3
-*/
-
-@import '_layout.css';
+@import '_notification.css';
 @import '_log-entry.css';
 @import '_log.css';
-@import '_notification.css';
 @import '_scroll-area.css';
+
+@import '_layout.css';
 @import '_debug.css';
