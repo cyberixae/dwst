@@ -42,6 +42,8 @@ const cssRootFile = 'dwst.css';
 const htmlRootFile = 'dwst.html';
 const htmlRootLink = 'index.html';
 const styleguideRoot = 'styleguide';
+const styleguideRootFile = 'index.html';
+const styleguideRootLink = path.join(styleguideRoot, 'index.html');
 
 const sourceBase = 'dwst';
 const sourceDirs = {
@@ -73,17 +75,19 @@ const VERSION = (function () {
 }());
 
 const buildBase = 'build';
+const versionBase = path.join(buildBase, VERSION);
 const targetDirs = {
-  styles: path.join(buildBase, 'styles'),
-  scripts: path.join(buildBase, 'scripts'),
-  images: path.join(buildBase, 'images'),
-  styleguide: path.join(buildBase, styleguideRoot),
+  styles: path.join(versionBase, 'styles'),
+  scripts: path.join(versionBase, 'scripts'),
+  images: path.join(versionBase, 'images'),
+  styleguide: path.join(versionBase, 'styleguide'),
 };
 const targetPaths = {
   cssRoot: path.join(targetDirs.styles, cssRootFile),
-  htmlRoot: path.join(buildBase, htmlRootFile),
+  htmlRoot: path.join(versionBase, htmlRootFile),
   htmlLink: path.join(buildBase, htmlRootLink),
-  cacheBusterLink: path.join(buildBase, VERSION),
+  styleguideHtmlRoot: path.join(targetDirs.styleguide, styleguideRootFile),
+  styleguideHtmlLink: path.join(buildBase, styleguideRootLink),
 };
 
 // The ending slash of both base paths seems to be meaninful for some reason
@@ -258,9 +262,9 @@ gulp.task('build-html', () => {
   return gulp.src(sourcePaths.html)
     .pipe(replace('<script type="module"', '<script'))
     .pipe(replace('<base href="/"', `<base href="${appBase}"`))
-    .pipe(gulp.dest(buildBase))
+    .pipe(gulp.dest(versionBase))
     .pipe(rename(p => {
-      p.dirname = path.join(buildBase, p.dirname);
+      p.dirname = path.join(versionBase, p.dirname);
     }))
     .pipe(browserSync.stream());
 });
@@ -286,9 +290,9 @@ gulp.task('sync-manifest', () => {
 
 gulp.task('build-manifest', () => {
   return gulp.src(sourcePaths.manifest)
-    .pipe(gulp.dest(buildBase))
+    .pipe(gulp.dest(versionBase))
     .pipe(rename(p => {
-      p.dirname = path.join(buildBase, p.dirname);
+      p.dirname = path.join(versionBase, p.dirname);
     }))
     .pipe(browserSync.stream());
 });
@@ -324,7 +328,7 @@ gulp.task('build-styleguide', gulpSequence(['styleguide:generate', 'styleguide:a
 gulp.task('build-assets', ['build-js', 'build-styleguide', 'build-css', 'build-html', 'build-images', 'build-manifest']);
 
 gulp.task('create-symlinks', () => {
-  fse.ensureSymlinkSync('.', targetPaths.cacheBusterLink);
+  fse.ensureSymlinkSync(targetPaths.styleguideHtmlRoot, targetPaths.styleguideHtmlLink);
   fse.ensureSymlinkSync(targetPaths.htmlRoot, targetPaths.htmlLink);
 });
 
