@@ -36,22 +36,33 @@ const replace = require('gulp-replace');
 const mocha = require('gulp-mocha');
 const styleguide = require('sc5-styleguide');
 
+const VERSION = '2.4.10';
+
+// The ending slash of both base paths seems to be meaninful for some reason
+const appBase = `/${VERSION}/`;
+const styleguideBase = `/${VERSION}/styleguide`;
+
 const jsRootFile = 'dwst.js';
 const cssRootFile = 'dwst.css';
 const htmlRootFile = 'dwst.html';
 const htmlRootLink = 'index.html';
+const styleguideRootFile = 'index.html';
+const styleguideRootLink = path.join('styleguide', 'index.html');
 
 const buildBase = 'build';
+const versionBase = path.join(buildBase, VERSION);
 const targetDirs = {
-  styles: path.join(buildBase, 'styles'),
-  styleguide: path.join(buildBase, 'styleguide'),
-  scripts: path.join(buildBase, 'scripts'),
-  images: path.join(buildBase, 'images'),
+  styles: path.join(versionBase, 'styles'),
+  scripts: path.join(versionBase, 'scripts'),
+  images: path.join(versionBase, 'images'),
+  styleguide: path.join(versionBase, 'styleguide'),
 };
 const targetPaths = {
   cssRoot: path.join(targetDirs.styles, cssRootFile),
-  htmlRoot: path.join(buildBase, htmlRootFile),
+  htmlRoot: path.join(versionBase, htmlRootFile),
   htmlLink: path.join(buildBase, htmlRootLink),
+  styleguideHtmlRoot: path.join(targetDirs.styleguide, styleguideRootFile),
+  styleguideHtmlLink: path.join(buildBase, styleguideRootLink),
 };
 
 const sourceBase = 'dwst';
@@ -243,9 +254,10 @@ gulp.task('build-html', () => {
   // So we should be fine without the module system
   return gulp.src(sourcePaths.html)
     .pipe(replace('<script type="module"', '<script'))
-    .pipe(gulp.dest(buildBase))
+    .pipe(replace('<base href="/"', `<base href="${appBase}"`))
+    .pipe(gulp.dest(versionBase))
     .pipe(rename(p => {
-      p.dirname = path.join(buildBase, p.dirname);
+      p.dirname = path.join(versionBase, p.dirname);
     }))
     .pipe(browserSync.stream());
 });
@@ -271,9 +283,9 @@ gulp.task('sync-manifest', () => {
 
 gulp.task('build-manifest', () => {
   return gulp.src(sourcePaths.manifest)
-    .pipe(gulp.dest(buildBase))
+    .pipe(gulp.dest(versionBase))
     .pipe(rename(p => {
-      p.dirname = path.join(buildBase, p.dirname);
+      p.dirname = path.join(versionBase, p.dirname);
     }))
     .pipe(browserSync.stream());
 });
@@ -284,7 +296,7 @@ gulp.task('styleguide:generate', () => {
       title: 'DWST Style Guide',
       overviewPath: sourcePaths.cssReadme,
       rootPath: targetDirs.styleguide,
-      appRoot: '/styleguide',
+      appRoot: styleguideBase,
       readOnly: true,
       extraHead: [
         '<style>.sg-design {display: none;}</style>',
@@ -309,6 +321,7 @@ gulp.task('build-styleguide', gulpSequence(['styleguide:generate', 'styleguide:a
 gulp.task('build-assets', ['build-js', 'build-styleguide', 'build-css', 'build-html', 'build-images', 'build-manifest']);
 
 gulp.task('create-symlinks', () => {
+  fse.ensureSymlinkSync(targetPaths.styleguideHtmlRoot, targetPaths.styleguideHtmlLink);
   fse.ensureSymlinkSync(targetPaths.htmlRoot, targetPaths.htmlLink);
 });
 
