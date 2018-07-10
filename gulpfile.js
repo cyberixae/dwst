@@ -14,6 +14,7 @@
 
 */
 
+const fs = require('fs');
 const path = require('path');
 const gulp = require('gulp');
 const gulpSequence = require('gulp-sequence');
@@ -36,34 +37,12 @@ const replace = require('gulp-replace');
 const mocha = require('gulp-mocha');
 const styleguide = require('sc5-styleguide');
 
-const VERSION = '2.4.10';
-
-// The ending slash of both base paths seems to be meaninful for some reason
-const appBase = `/${VERSION}/`;
-const styleguideBase = `/${VERSION}/styleguide`;
-
 const jsRootFile = 'dwst.js';
 const cssRootFile = 'dwst.css';
 const htmlRootFile = 'dwst.html';
 const htmlRootLink = 'index.html';
 const styleguideRootFile = 'index.html';
 const styleguideRootLink = path.join('styleguide', 'index.html');
-
-const buildBase = 'build';
-const versionBase = path.join(buildBase, VERSION);
-const targetDirs = {
-  styles: path.join(versionBase, 'styles'),
-  scripts: path.join(versionBase, 'scripts'),
-  images: path.join(versionBase, 'images'),
-  styleguide: path.join(versionBase, 'styleguide'),
-};
-const targetPaths = {
-  cssRoot: path.join(targetDirs.styles, cssRootFile),
-  htmlRoot: path.join(versionBase, htmlRootFile),
-  htmlLink: path.join(buildBase, htmlRootLink),
-  styleguideHtmlRoot: path.join(targetDirs.styleguide, styleguideRootFile),
-  styleguideHtmlLink: path.join(buildBase, styleguideRootLink),
-};
 
 const sourceBase = 'dwst';
 const sourceDirs = {
@@ -85,7 +64,34 @@ const sourcePaths = {
   scripts: path.join(sourceDirs.scripts, '**/*.js'),
   scriptEntry: path.join(sourceDirs.scripts, 'dwst.js'),
   styleguideFavicon: path.join(sourceDirs.styles, 'favicon.ico'),
+  config: path.join(sourceDirs.scripts, 'config.js'),
 };
+
+const VERSION = (function () {
+  // hack to read the version number from an EcmaScript module
+  const configFile = fs.readFileSync(sourcePaths.config, {encoding: 'utf-8'});
+  return configFile.match(/appVersion: +'([^']*)',/)[1];
+}());
+
+const buildBase = 'build';
+const versionBase = path.join(buildBase, VERSION);
+const targetDirs = {
+  styles: path.join(versionBase, 'styles'),
+  scripts: path.join(versionBase, 'scripts'),
+  images: path.join(versionBase, 'images'),
+  styleguide: path.join(versionBase, 'styleguide'),
+};
+const targetPaths = {
+  cssRoot: path.join(targetDirs.styles, cssRootFile),
+  htmlRoot: path.join(versionBase, htmlRootFile),
+  htmlLink: path.join(buildBase, htmlRootLink),
+  styleguideHtmlRoot: path.join(targetDirs.styleguide, styleguideRootFile),
+  styleguideHtmlLink: path.join(buildBase, styleguideRootLink),
+};
+
+// The ending slash of both base paths seems to be meaninful for some reason
+const appBase = `/${VERSION}/`;
+const styleguideBase = `/${VERSION}/styleguide`;
 
 const lintingPaths = {
   json: [sourcePaths.manifest, '.htmlhintrc', '.stylelintrc', 'package.json'],
