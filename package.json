@@ -46,7 +46,7 @@
     "sc5-styleguide": "^0.3.47",
     "stylelint-no-unsupported-browser-features": "^1.0.0",
     "vinyl-fs": "^2.4.4",
-    "webpack": "^3.5.5",
+    "webpack": "^4.17.1",
     "webpack-stream": "^4.0.0"
   },
   "babel": {

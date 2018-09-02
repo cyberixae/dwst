@@ -24,7 +24,7 @@ const htmlhint = require('gulp-htmlhint');
 const browserSync = require('browser-sync').create();
 const clean = require('gulp-clean');
 const webpackStream = require('webpack-stream');
-const webpack2 = require('webpack');
+const webpack = require('webpack');
 const fse = require('fs-extra');
 const postcss = require('gulp-postcss');
 const atImport = require('postcss-import');
@@ -199,7 +199,7 @@ gulp.task('build-css', () => {
 });
 
 const webpackModuleConf = {
-  loaders: [
+  rules: [
     {
       test: /\.js$/,
       loader: 'babel-loader',
@@ -229,7 +229,11 @@ gulp.task('build-app-js', () => {
       },
       devtool: 'source-map',
       module: webpackModuleConf,
-    }, webpack2))
+      mode: 'none',
+      optimization: {
+        minimize: true,
+      },
+    }, webpack))
     .pipe(gulp.dest(targetDirs.scripts))
     .pipe(rename(p => {
       p.dirname = path.join(targetDirs.scripts, p.dirname);
@@ -245,7 +249,11 @@ gulp.task('build-sw-js', () => {
       },
       devtool: 'source-map',
       module: webpackModuleConf,
-    }, webpack2))
+      mode: 'none',
+      optimization: {
+        minimize: true,
+      },
+    }, webpack))
     .pipe(gulp.dest(targetDirs.scripts))
     .pipe(rename(p => {
       p.dirname = path.join(targetDirs.scripts, p.dirname);
