@@ -15,6 +15,7 @@
 
 import config from './config.js';
 
+import {errorHandler, SocketError, UnknownCommand, DwstError} from './errors.js';
 import {escapeForParticles} from './particles.js';
 import currenttime from './currenttime.js';
 import HistoryManager from './history_manager.js';
@@ -54,7 +55,7 @@ const controller = {
     loud(command);
   },
 
-  onConnectionOpen: protocol => {
+  onSocketOpen: protocol => {
     const selected = (() => {
       if (protocol.length < 1) {
         return [];
@@ -67,7 +68,7 @@ const controller = {
     });
   },
 
-  onConnectionClose: (e, sessionLength) => {
+  onSocketClose: (e, sessionLength) => {
     const meanings = {
       1000: 'Normal Closure',
       1001: 'Going Away',
@@ -107,7 +108,7 @@ const controller = {
     });
   },
 
-  onMessage: msg => {
+  onSocketMessage: msg => {
     if (typeof msg === 'string') {
       terminal.log(msg, 'received');
     } else {
@@ -120,8 +121,8 @@ const controller = {
     }
   },
 
-  onError: () => {
-    terminal.log('WebSocket error.', 'error');
+  onSocketError: () => {
+    throw new SocketError();
   },
 
   onSendWhileConnecting: verb => {
@@ -147,7 +148,6 @@ const pluginInterface = {
   intervalId: null,
 
 };
-
 
 const plugins = [
   Binary,
@@ -180,17 +180,7 @@ function run(command) {
 
   const plugin = pluginInterface.commands.get(pluginName);
   if (typeof plugin === 'undefined') {
-    const errorMessage = `invalid command: ${pluginName}`;
-    const helpTip = [
-      'type ',
-      {
-        type: 'command',
-        text: '/help',
-      },
-      ' to list available commands',
-    ];
-    terminal.mlog([errorMessage, helpTip], 'error');
-    return;
+    throw new UnknownCommand(pluginName);
   }
   plugin.run(paramString);
 }
@@ -344,6 +334,12 @@ function onLoad() {
 
 document.addEventListener('DOMContentLoaded', init);
 window.addEventListener('load', onLoad);
+window.addEventListener('error', evt => {
+  if (evt.error instanceof DwstError) {
+    evt.preventDefault();
+    errorHandler(pluginInterface, evt.error);
+  }
+});
 
 // plugin interface developer access for live debugging
 if (typeof window === 'object') {

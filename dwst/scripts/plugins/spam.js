@@ -13,6 +13,7 @@
 */
 
 import utils from '../utils.js';
+import {NoConnection, InvalidCombination} from '../errors.js';
 
 export default class Spam {
 
@@ -43,6 +44,7 @@ export default class Spam {
 
   _run(timesStr, ...commandParts) {
     const times = utils.parseNum(timesStr);
+    // WAITING for https://github.com/dwst/dwst/pull/317 to be merged
     const [command, payload] = (() => {
       if (commandParts.length < 1) {
         return ['send', null];
@@ -50,25 +52,10 @@ export default class Spam {
       const firstPart = commandParts[0];
       const otherParts = commandParts.slice(1);
       if (['/s', '/send', '/b', '/binary'].includes(firstPart) === false) {
-        this._dwst.terminal.mlog([
-          [
-            'Invalid ',
-            {
-              type: 'dwstgg',
-              text: 'spam',
-              section: 'spam',
-            },
-            ' command combination.',
-          ],
-          'Compatible commands: send, binary',
-        ], 'error');
-        return [null, null];
+        throw new InvalidCombination('spam', ['send', 'binary']);
       }
       return [firstPart.slice(1), otherParts.join(' ')];
     })();
-    if (command === null) {
-      return;
-    }
     const spam = (limit, i = 0) => {
       if (i === limit) {
         return;
@@ -80,8 +67,7 @@ export default class Spam {
         return payload;
       })();
       if (this._dwst.connection === null || this._dwst.connection.isOpen() === false) {
-        this._dwst.terminal.log('spam failed, no connection', 'error');
-        return;
+        throw new NoConnection(message);
       }
       this._dwst.controller.run([command, message].join(' '));
       const nextspam = () => {

@@ -13,6 +13,7 @@
 */
 
 import utils from '../utils.js';
+import {NoConnection, InvalidCombination, NoInterval} from '../errors.js';
 
 export default class Interval {
 
@@ -46,10 +47,11 @@ export default class Interval {
   _run(intervalStr = null, ...commandParts) {
     if (intervalStr === null) {
       if (this._dwst.intervalId === null) {
-        this._dwst.terminal.log('no interval to clear', 'error');
+        throw new NoInterval();
       } else {
         clearInterval(this._dwst.intervalId);
         this._dwst.terminal.log('interval cleared', 'system');
+        this._dwst.intervalId = null;
       }
       return;
     }
@@ -60,25 +62,10 @@ export default class Interval {
       const firstPart = commandParts[0];
       const otherParts = commandParts.slice(1);
       if (['/s', '/send', '/b', '/binary'].includes(firstPart) === false) {
-        this._dwst.terminal.mlog([
-          [
-            'Invalid ',
-            {
-              type: 'dwstgg',
-              text: 'interval',
-              section: 'interval',
-            },
-            ' command combination.',
-          ],
-          'Compatible commands: send, binary',
-        ], 'error');
-        return [null, null];
+        throw new InvalidCombination('interval', ['send', 'binary']);
       }
       return [firstPart.slice(1), otherParts.join(' ')];
     })();
-    if (command === null) {
-      return;
-    }
     let count = 0;
     const interval = utils.parseNum(intervalStr);
     const spammer = () => {
@@ -90,8 +77,9 @@ export default class Interval {
       })();
       if (this._dwst.connection === null || this._dwst.connection.isOpen() === false) {
         if (this._dwst.intervalId !== null) {
-          this._dwst.terminal.log('interval failed, no connection', 'error');
-          this._dwst.controller.run('interval');
+          clearInterval(this._dwst.intervalId);
+          this._dwst.intervalId = null;
+          throw new NoConnection(message);
         }
         return;
       }
@@ -101,6 +89,7 @@ export default class Interval {
     if (this._dwst.intervalId !== null) {
       this._dwst.terminal.log('clearing old interval', 'system');
       clearInterval(this._dwst.intervalId);
+      this._dwst.intervalId = null;
     }
     this._dwst.intervalId = setInterval(spammer, interval);
     this._dwst.terminal.log('interval set', 'system');
