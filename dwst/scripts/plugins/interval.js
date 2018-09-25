@@ -13,6 +13,7 @@
 */
 
 import utils from '../utils.js';
+import {noConnection} from '../errors.js';
 
 export default class Interval {
 
@@ -56,19 +57,28 @@ export default class Interval {
     let count = 0;
     const interval = utils.parseNum(intervalStr);
     const spammer = () => {
-      if (this._dwst.connection === null || !this._dwst.connection.isOpen()) {
+      let command;
+      let message;
+      if (commandParts.length < 1) {
+        command = 'send';
+        message = String(count);
+        count += 1;
+      } else {
+        const firstPart = commandParts[0];
+        if (['/s', '/send', '/b', '/binary'].includes(firstPart) === false) {
+          throw 'interval only support send and binary commands'
+        }
+        command = firstPart.slice(1);
+        message = commandParts.slice(1).join(' ');
+      }
+      if (this._dwst.connection === null || this._dwst.connection.isOpen() === false) {
         if (this._dwst.intervalId !== null) {
-          this._dwst.terminal.log('interval failed, no connection', 'error');
+          this._dwst.controller.onError(new noConnection(message));
           this._dwst.controller.run('interval');
         }
         return;
       }
-      if (commandParts.length < 1) {
-        this._dwst.controller.run('send', String(count));
-        count += 1;
-        return;
-      }
-      this._dwst.controller.silent(commandParts.join(' '));
+      this._dwst.controller.run([command, message].join(' '));
     };
     if (this._dwst.intervalId !== null) {
       this._dwst.terminal.log('clearing old interval', 'system');

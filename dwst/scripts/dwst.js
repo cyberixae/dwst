@@ -15,6 +15,7 @@
 
 import config from './config.js';
 
+import {errorHandler} from './errors.js';
 import {escapeForParticles} from './particles.js';
 import currenttime from './currenttime.js';
 import HistoryManager from './history_manager.js';
@@ -54,7 +55,7 @@ const controller = {
     loud(command);
   },
 
-  onConnectionOpen: protocol => {
+  onSocketOpen: protocol => {
     const selected = (() => {
       if (protocol.length < 1) {
         return [];
@@ -67,7 +68,7 @@ const controller = {
     });
   },
 
-  onConnectionClose: (e, sessionLength) => {
+  onSocketClose: (e, sessionLength) => {
     const meanings = {
       1000: 'Normal Closure',
       1001: 'Going Away',
@@ -107,7 +108,7 @@ const controller = {
     });
   },
 
-  onMessage: msg => {
+  onSocketMessage: msg => {
     if (typeof msg === 'string') {
       terminal.log(msg, 'received');
     } else {
@@ -120,8 +121,12 @@ const controller = {
     }
   },
 
-  onError: () => {
+  onSocketError: () => {
     terminal.log('WebSocket error.', 'error');
+  },
+
+  onError: (error) => {
+    errorHandler(terminal, error);
   },
 
   onSendWhileConnecting: verb => {
@@ -148,6 +153,7 @@ const pluginInterface = {
 
 };
 
+window._dwst = pluginInterface;
 
 const plugins = [
   Binary,
