@@ -15,7 +15,7 @@
 
 import config from './config.js';
 
-import {errorHandler, SocketError} from './errors.js';
+import {errorHandler, SocketError, UnknownCommand} from './errors.js';
 import {escapeForParticles} from './particles.js';
 import currenttime from './currenttime.js';
 import HistoryManager from './history_manager.js';
@@ -186,17 +186,7 @@ function maybeRun(command) {
 
   const plugin = pluginInterface.commands.get(pluginName);
   if (typeof plugin === 'undefined') {
-    const errorMessage = `invalid command: ${pluginName}`;
-    const helpTip = [
-      'type ',
-      {
-        type: 'command',
-        text: '/help',
-      },
-      ' to list available commands',
-    ];
-    terminal.mlog([errorMessage, helpTip], 'error');
-    return;
+    throw new UnknownCommand(pluginName);
   }
   plugin.run(paramString);
 }

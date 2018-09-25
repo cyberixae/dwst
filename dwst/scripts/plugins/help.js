@@ -12,6 +12,8 @@
 
 */
 
+import {UnknownCommand, UnknownHelpPage} from '../errors.js';
+
 function flatList(values) {
   const segments = [];
   values.forEach(value => {
@@ -588,15 +590,13 @@ export default class Help {
       ]), 'system');
       return;
     }
-
-    this._dwst.terminal.log(`Unkown help page: ${page}`, 'error');
+    throw new UnknownHelpPage(page);
   }
 
   _commandHelp(command) {
     const plugin = this._dwst.commands.get(command);
     if (typeof plugin === 'undefined') {
-      this._dwst.terminal.log(`the command does not exist: ${command}`, 'error');
-      return;
+      throw new UnknownCommand(command);
     }
     if (typeof plugin.usage === 'undefined') {
       this._dwst.terminal.log(`no help available for: ${command}`, 'system');

@@ -14,15 +14,7 @@
 
 import utils from '../utils.js';
 import {parseParticles} from '../particles.js';
-import {NoConnection} from '../errors.js';
-
-class UnknownInstruction extends Error {
-
-  constructor(instruction) {
-    super();
-    this.instruction = instruction;
-  }
-}
+import {NoConnection, UnkownInstruction} from '../errors.js';
 
 export default class Send {
 
@@ -105,40 +97,15 @@ export default class Send {
       }
       return str;
     }
-    throw new UnknownInstruction(instr);
+    throw new UnknownInstruction(instr, 'send');
   }
 
   run(paramString) {
     const parsed = parseParticles(paramString);
-    let processed;
-    try {
-      processed = parsed.map(particle => {
-        const [instruction, ...args] = particle;
-        return this._process(instruction, args);
-      });
-    } catch (e) {
-      if (e instanceof UnknownInstruction) {
-        const message = [
-          [
-            'No helper ',
-            {
-              type: 'strong',
-              text: e.instruction,
-            },
-            ' available for ',
-            {
-              type: 'dwstgg',
-              text: 'send',
-              section: 'send',
-            },
-            '.',
-          ],
-        ];
-        this._dwst.terminal.mlog(message, 'error');
-        return;
-      }
-      throw e;
-    }
+    const processed = parsed.map(particle => {
+      const [instruction, ...args] = particle;
+      return this._process(instruction, args);
+    });
     const msg = processed.join('');
 
     if (this._dwst.connection === null || this._dwst.connection.isClosing() || this._dwst.connection.isClosed()) {

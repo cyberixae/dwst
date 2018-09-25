@@ -38,9 +38,27 @@ export class InvalidCombination extends dwstError {
   }
 }
 
-export class UnknownCommand extends dwstError {}
-export class UnknownInstruction extends dwstError {}
-export class UnknownHelpPage extends dwstError {}
+export class UnknownCommand extends dwstError {
+  constructor(command) {
+    super();
+    this.command = command;
+  }
+}
+
+export class UnknownInstruction extends dwstError {
+  constructor(instruction, command) {
+    super();
+    this.instruction = instruction;
+    this.command = command;
+  }
+}
+
+export class UnknownHelpPage extends dwstError {
+  constructor(page) {
+    super();
+    this.page = page;
+  }
+}
 export class UnknownText extends dwstError {
   constructor(variable) {
     super();
@@ -94,19 +112,45 @@ function errorToMLog(error) {
     // TODO: links
     return [`Invalid ${error.command} command combination.`, `Compatible commands: ${error.commands.join(', ')}`];
   }
-/*
   if (error instanceof UnknownCommand) {
-  ./plugins/help.js:      this._dwst.terminal.log(`the command does not exist: ${command}`, 'error');
-  ./dwst.js:    terminal.mlog([errorMessage, helpTip], 'error');  
+    const helpTip = [
+      'type ',
+      {
+        type: 'command',
+        text: '/help #commands',
+      },
+      ' to list available commands',
+    ];
+    return [`invalid command: ${error.command}`, helpTip];
   }
   if (error instanceof UnknownInstruction) {
-  ./plugins/send.js:        this._dwst.terminal.mlog(message, 'error');
-  ./plugins/binary.js:        this._dwst.terminal.mlog(message, 'error');
+    return [
+      [
+        'No helper ',
+        {
+          type: 'strong',
+          text: error.instruction,
+        },
+        ' available for ',
+        {
+          type: 'dwstgg',
+          text: error.command,
+          section: error.command,
+        },
+        '.',
+      ],
+    ];
   }
   if (error instanceof UnknownHelpPage) {
-  ./plugins/help.js:    this._dwst.terminal.log(`Unkown help page: ${page}`, 'error');
+    const listTip = [
+      'Display help index by typing ',
+      {
+        type: 'command',
+        text: '/help',
+      },
+    ];
+    return [`Unkown help page: ${error.page}`, listTip];
   }
-  */
   if (error instanceof UnknownText) {
     const listTip = [
       'List available texts by typing ',
@@ -114,7 +158,6 @@ function errorToMLog(error) {
         type: 'command',
         text: '/texts',
       },
-      '.',
     ];
     return [`Text "${error.variable}" does not exist.`, listTip];
   }
@@ -125,7 +168,6 @@ function errorToMLog(error) {
         type: 'command',
         text: '/bins',
       },
-      '.',
     ];
     return [`Binary "${error.variable}" does not exist.`, listTip];
   }

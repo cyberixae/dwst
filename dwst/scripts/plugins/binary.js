@@ -14,7 +14,7 @@
 
 import utils from '../utils.js';
 import {parseParticles} from '../particles.js';
-import {NoConnection} from '../errors.js';
+import {NoConnection, UnkownInstruction} from '../errors.js';
 
 class UnknownInstruction extends Error {
 
@@ -165,41 +165,16 @@ export default class Binary {
       }
       return new Uint8Array(bytes);
     }
-    throw new UnknownInstruction(instr);
+    throw new UnknownInstruction(instr, 'binary');
   }
 
 
   run(paramString) {
     const parsed = parseParticles(paramString);
-    let processed;
-    try {
-      processed = parsed.map(particle => {
-        const [instruction, ...args] = particle;
-        return this._process(instruction, args);
-      });
-    } catch (e) {
-      if (e instanceof UnknownInstruction) {
-        const message = [
-          [
-            'No helper ',
-            {
-              type: 'strong',
-              text: e.instruction,
-            },
-            ' available for ',
-            {
-              type: 'dwstgg',
-              text: 'binary',
-              section: 'binary',
-            },
-            '.',
-          ],
-        ];
-        this._dwst.terminal.mlog(message, 'error');
-        return;
-      }
-      throw e;
-    }
+    const processed = parsed.map(particle => {
+      const [instruction, ...args] = particle;
+      return this._process(instruction, args);
+    });
     const out = joinBuffers(processed);
 
     const msg = `<${out.byteLength}B of data> `;
