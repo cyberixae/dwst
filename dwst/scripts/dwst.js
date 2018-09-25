@@ -15,7 +15,7 @@
 
 import config from './config.js';
 
-import {errorHandler} from './errors.js';
+import {errorHandler, SocketError} from './errors.js';
 import {escapeForParticles} from './particles.js';
 import currenttime from './currenttime.js';
 import HistoryManager from './history_manager.js';
@@ -122,7 +122,7 @@ const controller = {
   },
 
   onSocketError: () => {
-    terminal.log('WebSocket error.', 'error');
+    errorHandler(terminal, new SocketError());
   },
 
   onError: (error) => {
@@ -180,7 +180,7 @@ for (const Constructor of plugins) {
   }
 }
 
-function run(command) {
+function maybeRun(command) {
   const [pluginName, ...params] = command.split(' ');
   const paramString = params.join(' ');
 
@@ -199,6 +199,14 @@ function run(command) {
     return;
   }
   plugin.run(paramString);
+}
+
+function run(command) {
+  try {
+    maybeRun(command);
+  } catch(e) {
+    errorHandler(terminal, e);
+  }
 }
 
 function refreshClock() {

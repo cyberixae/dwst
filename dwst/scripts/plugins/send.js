@@ -14,6 +14,7 @@
 
 import utils from '../utils.js';
 import {parseParticles, InvalidParticles} from '../particles.js';
+import {NoConnection} from '../errors.js';
 
 class UnknownInstruction extends Error {
 
@@ -159,8 +160,7 @@ export default class Send {
         },
         ' to form a connection and try again.',
       ];
-      this._dwst.terminal.mlog(['No connection.', `Cannot send: ${msg}`, connectTip], 'error');
-      return;
+      throw new NoConnection(msg);
     }
     this._dwst.terminal.log(msg, 'sent');
     this._dwst.connection.send(msg);

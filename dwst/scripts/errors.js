@@ -59,17 +59,19 @@ function errorToMLog(error) {
   */
   }
 /*
-  if (error instanceof alreadyConnected) {
+  if (error instanceof AlreadyConnected) {
   ./plugins/connect.js:      ], 'error');
   }
-  if (error instanceof socketError) {
-  ./dwst.js:    terminal.log('WebSocket error.', 'error');
+*/
+  if (error instanceof SocketError) {
+    return ['WebSocket error.'];
   }
-  if (error instanceof invalidSyntax) {
+/*
+  if (error instanceof InvalidSyntax) {
   ./plugins/send.js:        this._dwst.terminal.mlog(['Syntax error.'], 'error');
   ./plugins/binary.js:        this._dwst.terminal.mlog(['Syntax error.'], 'error');
   }
-  if (error instanceof invalidArgument) {
+  if (error instanceof InvalidArgument) {
   ./plugins/forget.js:      this._dwst.terminal.mlog([`Invalid argument: ${target}`, historyLine], 'error');
   }
 */
@@ -78,24 +80,24 @@ function errorToMLog(error) {
     return [`Invalid ${error.command} command combination.`, `Compatible commands: ${error.commands.join(', ')}`];
   }
 /*
-  if (error instanceof unknownCommand) {
+  if (error instanceof UnknownCommand) {
   ./plugins/help.js:      this._dwst.terminal.log(`the command does not exist: ${command}`, 'error');
   ./dwst.js:    terminal.mlog([errorMessage, helpTip], 'error');  
   }
-  if (error instanceof unknownInstruction) {
+  if (error instanceof UnknownInstruction) {
   ./plugins/send.js:        this._dwst.terminal.mlog(message, 'error');
   ./plugins/binary.js:        this._dwst.terminal.mlog(message, 'error');
   }
-  if (error instanceof unknownHelpPage) {
+  if (error instanceof UnknownHelpPage) {
   ./plugins/help.js:    this._dwst.terminal.log(`Unkown help page: ${page}`, 'error');
   }
-  if (error instanceof unknownText) {
+  if (error instanceof UnknownText) {
   ./plugins/texts.js:      this._dwst.terminal.mlog([`Text "${variable}" does not exist.`, listTip], 'error');
   }
-  if (error instanceof unknownBinary) {
+  if (error instanceof UnknownBinary) {
   ./plugins/bins.js:      this._dwst.terminal.mlog([`Binary "${variable}" does not exist.`, listTip], 'error');
   }
-  if (error instanceof noInterval) {
+  if (error instanceof NoInterval) {
   ./plugins/interval.js:        this._dwst.terminal.log('no interval to clear', 'error');
   }
   */
