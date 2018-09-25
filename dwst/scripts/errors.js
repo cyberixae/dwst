@@ -51,12 +51,6 @@ function errorToMLog(error) {
       ' to form a connection and try again.',
     ];
     return ['No connection.', `Cannot send: ${error.msg}`, connectTip];
-  /*
-  ./plugins/send.js:      this._dwst.terminal.mlog(['No connection.', `Cannot send: ${msg}`, connectTip], 'error');
-  ./plugins/binary.js:      this._dwst.terminal.mlog(['No connection.', `Cannot send: ${msg}`, connectTip], 'error');
-  ./plugins/spam.js:        this._dwst.terminal.log('spam failed, no connection', 'error');
-  ./plugins/interval.js:          this._dwst.terminal.log('interval failed, no connection', 'error');
-  */
   }
 /*
   if (error instanceof AlreadyConnected) {

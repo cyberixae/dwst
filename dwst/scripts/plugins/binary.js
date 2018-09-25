@@ -14,6 +14,7 @@
 
 import utils from '../utils.js';
 import {parseParticles, InvalidParticles} from '../particles.js';
+import {NoConnection} from '../errors.js';
 
 class UnknownInstruction extends Error {
 
@@ -212,17 +213,7 @@ export default class Binary {
 
     const msg = `<${out.byteLength}B of data> `;
     if (this._dwst.connection === null || this._dwst.connection.isClosing() || this._dwst.connection.isClosed()) {
-      const connectTip = [
-        'Use ',
-        {
-          type: 'dwstgg',
-          text: 'connect',
-          section: 'connect',
-        },
-        ' to form a connection and try again.',
-      ];
-      this._dwst.terminal.mlog(['No connection.', `Cannot send: ${msg}`, connectTip], 'error');
-      return;
+      throw new NoConnection(msg);
     }
     this._dwst.terminal.blog(out, 'sent');
     this._dwst.connection.send(out);

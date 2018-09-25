@@ -151,15 +151,6 @@ export default class Send {
     const msg = processed.join('');
 
     if (this._dwst.connection === null || this._dwst.connection.isClosing() || this._dwst.connection.isClosed()) {
-      const connectTip = [
-        'Use ',
-        {
-          type: 'dwstgg',
-          text: 'connect',
-          section: 'connect',
-        },
-        ' to form a connection and try again.',
-      ];
       throw new NoConnection(msg);
     }
     this._dwst.terminal.log(msg, 'sent');

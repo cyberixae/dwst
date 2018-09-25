@@ -13,6 +13,7 @@
 */
 
 import utils from '../utils.js';
+import {NoConnection, InvalidCombination} from '../errors.js';
 
 export default class Spam {
 
@@ -47,19 +48,28 @@ export default class Spam {
       if (i === limit) {
         return;
       }
+      let command;
+      let message;
       if (commandParts.length < 1) {
-        this._dwst.controller.run('send', String(i));
+        command = 'send';
+        message = String(i);
       } else {
-        this._dwst.controller.silent(commandParts.join(' '));
+        const firstPart = commandParts[0];
+        if (['/s', '/send', '/b', '/binary'].includes(firstPart) === false) {
+          this._dwst.controller.onError(new InvalidCombination('spam', ['send', 'binary']));
+          return;
+        }
+        command = firstPart.slice(1);
+        message = commandParts.slice(1).join(' ');
       }
+      if (this._dwst.connection === null || this._dwst.connection.isOpen() === false) {
+        throw new NoConnection(message);
+      }
+      this._dwst.controller.run([command, message].join(' '));
       const nextspam = () => {
         spam(limit, i + 1);
       };
-      if (this._dwst.connection !== null && this._dwst.connection.isOpen()) {
-        setTimeout(nextspam, 0);
-      } else {
-        this._dwst.terminal.log('spam failed, no connection', 'error');
-      }
+      setTimeout(nextspam, 0);
     };
     spam(times);
   }
