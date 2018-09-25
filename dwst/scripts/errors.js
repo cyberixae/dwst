@@ -52,11 +52,19 @@ function errorToMLog(error) {
     ];
     return ['No connection.', `Cannot send: ${error.msg}`, connectTip];
   }
-/*
   if (error instanceof AlreadyConnected) {
-  ./plugins/connect.js:      ], 'error');
+    return [
+      'Already connected to a server',
+      [
+        'Type ',
+        {
+          type: 'command',
+          text: '/disconnect',
+        },
+        ' to end the connection',
+      ],
+    ];
   }
-*/
   if (error instanceof SocketError) {
     return ['WebSocket error.'];
   }
