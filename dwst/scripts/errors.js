@@ -19,10 +19,13 @@ export class NoConnection extends dwstError {
     this.msg = msg;
   }
 }
+
 export class AlreadyConnected extends dwstError {}
+
 export class SocketError extends dwstError {}
 
 export class InvalidParticles extends dwstError { }
+
 export class InvalidArgument extends dwstError {
   constructor(argument, extraInfo) {
     super();
@@ -30,6 +33,7 @@ export class InvalidArgument extends dwstError {
     this.extraInfo = extraInfo;
   }
 }
+
 export class InvalidCombination extends dwstError {
   constructor(command, commands) {
     super();
@@ -59,18 +63,21 @@ export class UnknownHelpPage extends dwstError {
     this.page = page;
   }
 }
+
 export class UnknownText extends dwstError {
   constructor(variable) {
     super();
     this.variable = variable;
   }
 }
+
 export class UnknownBinary extends dwstError {
   constructor(variable) {
     super();
     this.variable = variable;
   }
 }
+
 export class NoInterval extends dwstError {}
 
 function errorToMLog(error) {
@@ -109,8 +116,21 @@ function errorToMLog(error) {
     return [`Invalid argument: ${error.argument}`, error.extraInfo];
   }
   if (error instanceof InvalidCombination) {
-    // TODO: links
-    return [`Invalid ${error.command} command combination.`, `Compatible commands: ${error.commands.join(', ')}`];
+    return [
+      [
+        'Invalid ',
+        {
+          type: 'dwstgg',
+          text: error.command,
+          section: error.command,
+        },
+        ' command combination.',
+      ],
+      [
+        'Compatible commands: ',
+        error.commands.join(', '),
+      ],
+    ];
   }
   if (error instanceof UnknownCommand) {
     const helpTip = [
