@@ -13,7 +13,7 @@
 */
 
 import utils from '../utils.js';
-import {noConnection} from '../errors.js';
+import {NoConnection, InvalidCombination} from '../errors.js';
 
 export default class Interval {
 
@@ -66,14 +66,16 @@ export default class Interval {
       } else {
         const firstPart = commandParts[0];
         if (['/s', '/send', '/b', '/binary'].includes(firstPart) === false) {
-          throw 'interval only support send and binary commands'
+          this._dwst.controller.onError(new InvalidCombination('interval', ['send', 'binary']));
+          this._dwst.controller.run('interval');
+          return;
         }
         command = firstPart.slice(1);
         message = commandParts.slice(1).join(' ');
       }
       if (this._dwst.connection === null || this._dwst.connection.isOpen() === false) {
         if (this._dwst.intervalId !== null) {
-          this._dwst.controller.onError(new noConnection(message));
+          this._dwst.controller.onError(new NoConnection(message));
           this._dwst.controller.run('interval');
         }
         return;

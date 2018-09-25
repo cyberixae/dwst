@@ -13,27 +13,34 @@
 
 export class dwstError extends Error {}
 
-export class noConnection extends dwstError {
+export class NoConnection extends dwstError {
   constructor(msg) {
     super();
     this.msg = msg;
   }
 }
-export class alreadyConnected extends dwstError {}
-export class socketError extends dwstError {}
+export class AlreadyConnected extends dwstError {}
+export class SocketError extends dwstError {}
 
-export class invalidSyntax extends dwstError {}
-export class invalidArgument extends dwstError {}
+export class InvalidSyntax extends dwstError {}
+export class InvalidArgument extends dwstError {}
+export class InvalidCombination extends dwstError {
+  constructor(command, commands) {
+    super();
+    this.command = command;
+    this.commands = commands;
+  }
+}
 
-export class unknownCommand extends dwstError {}
-export class unknownInstruction extends dwstError {}
-export class unknownHelpPage extends dwstError {}
-export class unknownText extends dwstError {}
-export class unknownBinary extends dwstError {}
-export class noInterval extends dwstError {}
+export class UnknownCommand extends dwstError {}
+export class UnknownInstruction extends dwstError {}
+export class UnknownHelpPage extends dwstError {}
+export class UnknownText extends dwstError {}
+export class UnknownBinary extends dwstError {}
+export class NoInterval extends dwstError {}
 
 function errorToMLog(error) {
-  if (error instanceof noConnection) {
+  if (error instanceof NoConnection) {
     const connectTip = [
       'Use ',
       {
@@ -65,6 +72,12 @@ function errorToMLog(error) {
   if (error instanceof invalidArgument) {
   ./plugins/forget.js:      this._dwst.terminal.mlog([`Invalid argument: ${target}`, historyLine], 'error');
   }
+*/
+  if (error instanceof InvalidCombination) {
+    // TODO: links
+    return [`Invalid ${error.command} command combination.`, `Compatible commands: ${error.commands.join(', ')}`];
+  }
+/*
   if (error instanceof unknownCommand) {
   ./plugins/help.js:      this._dwst.terminal.log(`the command does not exist: ${command}`, 'error');
   ./dwst.js:    terminal.mlog([errorMessage, helpTip], 'error');  
