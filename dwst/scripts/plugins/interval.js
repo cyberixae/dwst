@@ -13,7 +13,7 @@
 */
 
 import utils from '../utils.js';
-import {NoConnection, InvalidCombination} from '../errors.js';
+import {NoConnection, InvalidCombination, NoInterval} from '../errors.js';
 
 export default class Interval {
 
@@ -47,7 +47,7 @@ export default class Interval {
   _run(intervalStr = null, ...commandParts) {
     if (intervalStr === null) {
       if (this._dwst.intervalId === null) {
-        this._dwst.terminal.log('no interval to clear', 'error');
+        throw new NoInterval();
       } else {
         clearInterval(this._dwst.intervalId);
         this._dwst.terminal.log('interval cleared', 'system');

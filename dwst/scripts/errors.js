@@ -41,8 +41,18 @@ export class InvalidCombination extends dwstError {
 export class UnknownCommand extends dwstError {}
 export class UnknownInstruction extends dwstError {}
 export class UnknownHelpPage extends dwstError {}
-export class UnknownText extends dwstError {}
-export class UnknownBinary extends dwstError {}
+export class UnknownText extends dwstError {
+  constructor(variable) {
+    super();
+    this.variable = variable;
+  }
+}
+export class UnknownBinary extends dwstError {
+  constructor(variable) {
+    super();
+    this.variable = variable;
+  }
+}
 export class NoInterval extends dwstError {}
 
 function errorToMLog(error) {
@@ -96,16 +106,32 @@ function errorToMLog(error) {
   if (error instanceof UnknownHelpPage) {
   ./plugins/help.js:    this._dwst.terminal.log(`Unkown help page: ${page}`, 'error');
   }
+  */
   if (error instanceof UnknownText) {
-  ./plugins/texts.js:      this._dwst.terminal.mlog([`Text "${variable}" does not exist.`, listTip], 'error');
+    const listTip = [
+      'List available texts by typing ',
+      {
+        type: 'command',
+        text: '/texts',
+      },
+      '.',
+    ];
+    return [`Text "${error.variable}" does not exist.`, listTip];
   }
   if (error instanceof UnknownBinary) {
-  ./plugins/bins.js:      this._dwst.terminal.mlog([`Binary "${variable}" does not exist.`, listTip], 'error');
+    const listTip = [
+      'List available binaries by typing ',
+      {
+        type: 'command',
+        text: '/bins',
+      },
+      '.',
+    ];
+    return [`Binary "${error.variable}" does not exist.`, listTip];
   }
   if (error instanceof NoInterval) {
-  ./plugins/interval.js:        this._dwst.terminal.log('no interval to clear', 'error');
+    return ['no interval to clear'];
   }
-  */
 }
 
 export function errorHandler(terminal, error) {
