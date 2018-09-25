@@ -22,8 +22,14 @@ export class NoConnection extends dwstError {
 export class AlreadyConnected extends dwstError {}
 export class SocketError extends dwstError {}
 
-export class InvalidSyntax extends dwstError {}
-export class InvalidArgument extends dwstError {}
+export class InvalidParticles extends dwstError { }
+export class InvalidArgument extends dwstError {
+  constructor(argument, extraInfo) {
+    super();
+    this.argument = argument;
+    this.extraInfo = extraInfo;
+  }
+}
 export class InvalidCombination extends dwstError {
   constructor(command, commands) {
     super();
@@ -68,15 +74,12 @@ function errorToMLog(error) {
   if (error instanceof SocketError) {
     return ['WebSocket error.'];
   }
-/*
-  if (error instanceof InvalidSyntax) {
-  ./plugins/send.js:        this._dwst.terminal.mlog(['Syntax error.'], 'error');
-  ./plugins/binary.js:        this._dwst.terminal.mlog(['Syntax error.'], 'error');
+  if (error instanceof InvalidParticles) {
+    return ['Syntax error.'];
   }
   if (error instanceof InvalidArgument) {
-  ./plugins/forget.js:      this._dwst.terminal.mlog([`Invalid argument: ${target}`, historyLine], 'error');
+    return [`Invalid argument: ${error.argument}`, error.extraInfo];
   }
-*/
   if (error instanceof InvalidCombination) {
     // TODO: links
     return [`Invalid ${error.command} command combination.`, `Compatible commands: ${error.commands.join(', ')}`];

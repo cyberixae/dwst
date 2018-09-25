@@ -13,7 +13,7 @@
 */
 
 import utils from '../utils.js';
-import {parseParticles, InvalidParticles} from '../particles.js';
+import {parseParticles} from '../particles.js';
 import {NoConnection} from '../errors.js';
 
 class UnknownInstruction extends Error {
@@ -170,16 +170,7 @@ export default class Binary {
 
 
   run(paramString) {
-    let parsed;
-    try {
-      parsed = parseParticles(paramString);
-    } catch (e) {
-      if (e instanceof InvalidParticles) {
-        this._dwst.terminal.mlog(['Syntax error.'], 'error');
-        return;
-      }
-      throw e;
-    }
+    const parsed = parseParticles(paramString);
     let processed;
     try {
       processed = parsed.map(particle => {
