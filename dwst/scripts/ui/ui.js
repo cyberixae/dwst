@@ -14,22 +14,19 @@
 */
 
 import {escapeForParticles} from '../particles.js';
-import currenttime from '../currenttime.js';
 
 import Terminal from '../terminal.js';
+import Clock from './clock.js';
 import MenuButton from './menu_button.js';
 
 export default class Ui {
 
   constructor(element, dwst) {
+    this._element = element;
     this._dwst = dwst;
     this.terminal = new Terminal(element.getElementById('ter1'), this._dwst);
+    this.clock = new Clock(element.getElementById('clock1'), this._dwst);
     this.menuButton = new MenuButton(element.getElementById('menubut1'), this._dwst);
-  }
-
-  refreshClock() {
-    const time = currenttime();
-    document.getElementById('clock1').innerHTML = time;
   }
 
   enableDebugger() {
@@ -101,27 +98,18 @@ export default class Ui {
     }
   }
 
-  startClock() {
-    this.refreshClock();
-    const clock = document.getElementById('clock1');
-    clock.classList.remove('dwst-time--placeholder');
-    setInterval(this.refreshClock, 500);
-  }
-
   init() {
+    this._element.addEventListener('keydown', evt => this.globalKeyPress(evt));
     this.terminal.init();
-    this._dwst.controller.silent('/splash');
-
-    document.addEventListener('keydown', evt => this.globalKeyPress(evt));
     document.getElementById('msg1').addEventListener('keydown', evt => this.msgKeyPress(evt));
     document.getElementById('sendbut1').addEventListener('click', () => this.send());
     this.menuButton.init();
     document.getElementById('msg1').focus();
-
+    this._dwst.controller.silent('/splash');
   }
 
   onLoad() {
     this.terminal.onLoad();
-    this.startClock();
+    this.clock.onLoad();
   }
 }
