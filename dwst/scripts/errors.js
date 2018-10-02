@@ -206,5 +206,5 @@ function errorToMLog(error) {
 }
 
 export function errorHandler(dwst, error) {
-  dwst.terminal.mlog(errorToMLog(error), 'error');
+  dwst.ui.terminal.mlog(errorToMLog(error), 'error');
 }

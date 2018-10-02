@@ -46,7 +46,7 @@ export default class Texts {
     if (variable !== null) {
       const text = this._dwst.texts.get(variable);
       if (typeof text  !== 'undefined') {
-        this._dwst.terminal.log(text, 'system');
+        this._dwst.ui.terminal.log(text, 'system');
         return;
       }
       throw new UnknownText(variable);
@@ -55,7 +55,7 @@ export default class Texts {
       return `"${name}": <${text.length}B of text data>`;
     });
     const strs = ['Loaded texts:'].concat(listing);
-    this._dwst.terminal.mlog(strs, 'system');
+    this._dwst.ui.terminal.mlog(strs, 'system');
   }
 
   run(paramString) {

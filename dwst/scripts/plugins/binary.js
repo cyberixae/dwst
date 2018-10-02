@@ -173,7 +173,7 @@ export default class Binary {
     if (this._dwst.connection === null || this._dwst.connection.isClosing() || this._dwst.connection.isClosed()) {
       throw new NoConnection(msg);
     }
-    this._dwst.terminal.blog(out, 'sent');
+    this._dwst.ui.terminal.blog(out, 'sent');
     this._dwst.connection.send(out);
   }
 }

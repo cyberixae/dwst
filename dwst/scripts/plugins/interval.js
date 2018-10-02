@@ -50,7 +50,7 @@ export default class Interval {
         throw new NoInterval();
       } else {
         clearInterval(this._dwst.intervalId);
-        this._dwst.terminal.log('interval cleared', 'system');
+        this._dwst.ui.terminal.log('interval cleared', 'system');
         this._dwst.intervalId = null;
       }
       return;
@@ -87,12 +87,12 @@ export default class Interval {
       count += 1;
     };
     if (this._dwst.intervalId !== null) {
-      this._dwst.terminal.log('clearing old interval', 'system');
+      this._dwst.ui.terminal.log('clearing old interval', 'system');
       clearInterval(this._dwst.intervalId);
       this._dwst.intervalId = null;
     }
     this._dwst.intervalId = setInterval(spammer, interval);
-    this._dwst.terminal.log('interval set', 'system');
+    this._dwst.ui.terminal.log('interval set', 'system');
   }
 
   run(paramString) {
