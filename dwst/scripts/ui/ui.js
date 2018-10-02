@@ -1,0 +1,147 @@
+
+/**
+
+  Authors: Toni Ruottu, Finland 2010-2018
+           William Orr, US 2012
+
+  This file is part of Dark WebSocket Terminal.
+
+  CC0 1.0 Universal, http://creativecommons.org/publicdomain/zero/1.0/
+
+  To the extent possible under law, Dark WebSocket Terminal developers have waived all
+  copyright and related or neighboring rights to Dark WebSocket Terminal.
+
+*/
+
+import {escapeForParticles} from '../particles.js';
+import currenttime from '../currenttime.js';
+
+import Terminal from '../terminal.js';
+
+export default class Ui {
+
+  constructor(dwst) {
+    this._dwst = dwst;
+    this._resizePending = false;
+    this.terminal = new Terminal('ter1', this._dwst.controller);
+  }
+
+  refreshClock() {
+    const time = currenttime();
+    document.getElementById('clock1').innerHTML = time;
+  }
+
+  enableDebugger() {
+    document.documentElement.classList.add('dwst-debug--guides');
+  }
+
+  showHelpTip() {
+    const helpTip = [
+      'type ',
+      {
+        type: 'command',
+        text: '/help',
+      },
+      ' to list available commands',
+    ];
+    this.terminal.log(helpTip, 'system');
+  }
+
+  send() {
+    const raw = document.getElementById('msg1').value;
+    document.getElementById('msg1').value = '';
+    this._dwst.historyManager.select(raw);
+    if (raw === '/idkfa') {
+      this.enableDebugger();
+      return;
+    }
+    if (raw.length < 1) {
+      this.showHelpTip();
+      return;
+    }
+    if (raw[0] === '/') {
+      this._dwst.controller.loud(raw);
+      return;
+    }
+    const text = escapeForParticles(raw);
+    const command = `/send ${text}`;
+    this._dwst.controller.loud(command);
+  }
+
+  globalKeyPress(event) {
+    const msg1 = document.getElementById('msg1');
+    if (event.key === 'Escape') {
+      if (this._dwst.connection !== null && (this._dwst.connection.isOpen() || this._dwst.connection.isConnecting())) {
+        this._dwst.controller.loud('/disconnect');
+      } else if (msg1.value === '') {
+        const connects = this._dwst.historyManager.getConnectCommands(1);
+        if (connects.length < 1) {
+          msg1.value = `/connect ${this._dwst.ECHO_SERVER_URL}`;
+        } else {
+          msg1.value = connects[0];
+        }
+      } else {
+        this._dwst.historyManager.select(msg1.value);
+        msg1.value = '';
+      }
+    }
+  }
+
+  msgKeyPress(event) {
+    const msg1 = document.getElementById('msg1');
+    if (event.keyCode === 13) {
+      this.send();
+    } else if (event.keyCode === 38) { // up
+      msg1.value = this._dwst.historyManager.getPrevious(msg1.value);
+      return;
+    } else if (event.keyCode === 40) { // down
+      msg1.value = this._dwst.historyManager.getNext(msg1.value);
+      return;
+    }
+  }
+
+  throttledUpdateGfxPositions() {
+    if (this._resizePending !== true) {
+      this._resizePending = true;
+      setTimeout(() => {
+        this._resizePending = false;
+        this.terminal.updateGfxPositions();
+      }, 100);
+    }
+  }
+
+  startClock() {
+    this.refreshClock();
+    const clock = document.getElementById('clock1');
+    clock.classList.remove('dwst-time--placeholder');
+    setInterval(this.refreshClock, 500);
+  }
+
+  init() {
+    this._dwst.controller.silent('/splash');
+
+    window.addEventListener('resize', this.throttledUpdateGfxPositions);
+
+    document.addEventListener('keydown', evt => this.globalKeyPress(evt));
+    document.getElementById('msg1').addEventListener('keydown', evt => this.msgKeyPress(evt));
+    document.getElementById('sendbut1').addEventListener('click', () => this.send());
+    document.getElementById('menubut1').addEventListener('click', () => {
+      this._dwst.controller.loud('/splash');
+      this.terminal.scrollLog();
+    });
+    [...document.getElementsByClassName('js-auto-scroll-button')].forEach(asb => {
+      asb.addEventListener('click', evt => {
+        evt.preventDefault();
+        this.terminal.scrollLog();
+      });
+    });
+    setInterval(() => this.terminal.scrollNotificationUpdate(), 1000);
+    document.getElementById('msg1').focus();
+
+  }
+
+  onLoad() {
+    this.terminal.updateGfxPositions();
+    this.startClock();
+  }
+}
