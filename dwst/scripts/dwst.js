@@ -205,6 +205,7 @@ function loadSaves() {
 function init() {
   loadSaves();
   pluginInterface.ui = new Ui(document, pluginInterface);
+  // FIXME search and replace
   pluginInterface.terminal = pluginInterface.ui.terminal;
   pluginInterface.ui.init();
 }
