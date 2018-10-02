@@ -17,13 +17,14 @@ import {escapeForParticles} from '../particles.js';
 import currenttime from '../currenttime.js';
 
 import Terminal from '../terminal.js';
+import MenuButton from './menu_button.js';
 
 export default class Ui {
 
-  constructor(dwst) {
+  constructor(element, dwst) {
     this._dwst = dwst;
-    this._resizePending = false;
-    this.terminal = new Terminal('ter1', this._dwst.controller);
+    this.terminal = new Terminal(element.getElementById('ter1'), this._dwst);
+    this.menuButton = new MenuButton(element.getElementById('menubut1'), this._dwst);
   }
 
   refreshClock() {
@@ -100,16 +101,6 @@ export default class Ui {
     }
   }
 
-  throttledUpdateGfxPositions() {
-    if (this._resizePending !== true) {
-      this._resizePending = true;
-      setTimeout(() => {
-        this._resizePending = false;
-        this.terminal.updateGfxPositions();
-      }, 100);
-    }
-  }
-
   startClock() {
     this.refreshClock();
     const clock = document.getElementById('clock1');
@@ -118,30 +109,19 @@ export default class Ui {
   }
 
   init() {
+    this.terminal.init();
     this._dwst.controller.silent('/splash');
-
-    window.addEventListener('resize', this.throttledUpdateGfxPositions);
 
     document.addEventListener('keydown', evt => this.globalKeyPress(evt));
     document.getElementById('msg1').addEventListener('keydown', evt => this.msgKeyPress(evt));
     document.getElementById('sendbut1').addEventListener('click', () => this.send());
-    document.getElementById('menubut1').addEventListener('click', () => {
-      this._dwst.controller.loud('/splash');
-      this.terminal.scrollLog();
-    });
-    [...document.getElementsByClassName('js-auto-scroll-button')].forEach(asb => {
-      asb.addEventListener('click', evt => {
-        evt.preventDefault();
-        this.terminal.scrollLog();
-      });
-    });
-    setInterval(() => this.terminal.scrollNotificationUpdate(), 1000);
+    this.menuButton.init();
     document.getElementById('msg1').focus();
 
   }
 
   onLoad() {
-    this.terminal.updateGfxPositions();
+    this.terminal.onLoad();
     this.startClock();
   }
 }

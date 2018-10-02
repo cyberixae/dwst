@@ -17,10 +17,11 @@ import currenttime from './currenttime.js';
 
 export default class Terminal {
 
-  constructor(elementId, controller) {
-    this._elementId = elementId;
-    this._controller = controller;
+  constructor(element, dwst) {
+    this._element = element;
+    this._dwst = dwst;
     this._limit = 1000;
+    this._resizePending = false;
   }
 
   _htmlescape(line) {
@@ -105,11 +106,11 @@ export default class Terminal {
     });
   }
 
-  updateGfxPositions() {
+  _updateGfxPositions() {
     // Updating gfx positions with this method disables basic centering
     // and aligns the text in the gfx section with the text in log lines.
     const MAX_MAXCHARS = 110;
-    Reflect.apply(Array.prototype.forEach, document.getElementsByClassName('dwst-gfx'), [maxDiv => {
+    Reflect.apply(Array.prototype.forEach, this._element.getElementsByClassName('dwst-gfx'), [maxDiv => {
       const ref = maxDiv.getElementsByClassName('dwst-gfx__line')[0];
       const refTextWidth = ref.offsetWidth;
       const refTextLength = ref.textContent.length;
@@ -128,11 +129,10 @@ export default class Terminal {
   }
 
   addLogLine(logLine) {
-    const terminal = document.getElementById(this._elementId);
     const userWasScrolling = this.isUserScrolling();
-    terminal.appendChild(logLine);
-    while (terminal.childElementCount > this._limit) {
-      terminal.removeChild(terminal.firstChild);
+    this._element.appendChild(logLine);
+    while (this._element.childElementCount > this._limit) {
+      this._element.removeChild(this._element.firstChild);
     }
     if (userWasScrolling) {
       return;
@@ -179,7 +179,7 @@ export default class Terminal {
 
     this.addLogLine(gfxContainer);
 
-    this.updateGfxPositions();
+    this._updateGfxPositions();
   }
 
   mlog(lines, type) {
@@ -243,7 +243,7 @@ export default class Terminal {
             })();
             link.onclick = (evt => {
               evt.preventDefault();
-              this._controller.onHelpLinkClick(command);
+              this._dwst.controller.onHelpLinkClick(command);
             });
             link.setAttribute('href', '#');
             link.setAttribute('title', command);
@@ -263,7 +263,7 @@ export default class Terminal {
             const command = rawText;
             link.onclick = (evt => {
               evt.preventDefault();
-              this._controller.onCommandLinkClick(command);
+              this._dwst.controller.onCommandLinkClick(command);
             });
             link.setAttribute('href', '#');
             link.setAttribute('title', safeText);
@@ -386,6 +386,30 @@ export default class Terminal {
     this.mlog([msg].concat(hexLines), type);
   }
 
+  _throttledUpdateGfxPositions() {
+    if (this._resizePending !== true) {
+      this._resizePending = true;
+      setTimeout(() => {
+        this._resizePending = false;
+        this._updateGfxPositions();
+      }, 100);
+    }
+  }
+
+  init() {
+    window.addEventListener('resize', () => this._throttledUpdateGfxPositions());
+    [...document.getElementsByClassName('js-auto-scroll-button')].forEach(asb => {
+      asb.addEventListener('click', evt => {
+        evt.preventDefault();
+        this.scrollLog();
+      });
+    });
+    setInterval(() => this.scrollNotificationUpdate(), 1000);
+  }
+
+  onLoad() {
+    this._updateGfxPositions();
+  }
 }
 
 

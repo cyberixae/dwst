@@ -58,7 +58,7 @@ const controller = {
       }
       return [`Selected protocol: ${protocol}`];
     })();
-    terminal.mlog(['Connection established.'].concat(selected), 'system');
+    pluginInterface.ui.terminal.mlog(['Connection established.'].concat(selected), 'system');
     [...document.getElementsByClassName('dwst-button--splash')].forEach(element => {
       element.classList.replace('dwst-button--splash', 'dwst-button--splash-connected');
     });
@@ -97,7 +97,7 @@ const controller = {
       }
       return [`Session length: ${sessionLength}ms`];
     })();
-    terminal.mlog(['Connection closed.', `Close status: ${code}`].concat(reason).concat(sessionLengthString), 'system');
+    pluginInterface.ui.terminal.mlog(['Connection closed.', `Close status: ${code}`].concat(reason).concat(sessionLengthString), 'system');
     pluginInterface.connection = null;
     [...document.getElementsByClassName('dwst-button--splash-connected')].forEach(element => {
       element.classList.replace('dwst-button--splash-connected', 'dwst-button--splash');
@@ -106,12 +106,12 @@ const controller = {
 
   onSocketMessage: msg => {
     if (typeof msg === 'string') {
-      terminal.log(msg, 'received');
+      pluginInterface.ui.terminal.log(msg, 'received');
     } else {
       const fr = new FileReader();
       fr.onload = function (e) {
         const buffer = e.target.result;
-        terminal.blog(buffer, 'received');
+        pluginInterface.ui.terminal.blog(buffer, 'received');
       };
       fr.readAsArrayBuffer(msg);
     }
@@ -122,7 +122,7 @@ const controller = {
   },
 
   onSendWhileConnecting: verb => {
-    terminal.log(`Attempting to send data while ${verb}`, 'warning');
+    pluginInterface.ui.terminal.log(`Attempting to send data while ${verb}`, 'warning');
   },
 
 };
@@ -132,7 +132,6 @@ const pluginInterface = {
   VERSION: config.appVersion,
   ECHO_SERVER_URL: config.echoServer,
 
-  terminal,
   controller,
   historyManager: null,
   connection: null,
@@ -185,7 +184,7 @@ function silent(line) {
 }
 
 function loud(line) {
-  terminal.log(line, 'command');
+  pluginInterface.ui.terminal.log(line, 'command');
   silent(line);
 }
 
@@ -203,12 +202,10 @@ function loadSaves() {
   pluginInterface.historyManager = new HistoryManager(history, {save});
 }
 
-pluginInterface.ui = new Ui(pluginInterface);
-const terminal = pluginInterface.ui.terminal;
-pluginInterface.terminal = pluginInterface.ui.terminal;
-
 function init() {
   loadSaves();
+  pluginInterface.ui = new Ui(document, pluginInterface);
+  pluginInterface.terminal = pluginInterface.ui.terminal;
   pluginInterface.ui.init();
 }
 
