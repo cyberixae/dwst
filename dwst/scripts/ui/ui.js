@@ -82,7 +82,6 @@ export default class Ui {
 
   init() {
     this._element.addEventListener('keydown', evt => this.globalKeyPress(evt));
-    this._element.addEventListener('sendButtonClick', () => this.prompt.send());
     this.prompt.init();
     this.sendButton.init();
     this.menuButton.init();

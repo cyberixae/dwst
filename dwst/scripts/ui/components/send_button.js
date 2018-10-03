@@ -21,7 +21,7 @@ export default class SendButton {
 
   init() {
     this._element.addEventListener('click', () => {
-      this._element.dispatchEvent(new CustomEvent('sendButtonClick', {bubbles: true}));
+      this._dwst.ui.prompt.send()
     });
   }
 }
