@@ -26,6 +26,8 @@ export default class Ui {
   constructor(element, dwst) {
     this._element = element;
     this._dwst = dwst;
+    this._resizePending = false;
+
     this.terminal = new Terminal(element.getElementById('ter1'), this._dwst);
     this.clock = new Clock(element.getElementById('clock1'), this._dwst);
     this.prompt = new Prompt(element.getElementById('msg1'), this._dwst);
@@ -46,10 +48,41 @@ export default class Ui {
     }
   }
 
+  updateGfxPositions() {
+    // Updating gfx positions with this method disables basic centering
+    // and aligns the text in the gfx section with the text in log lines.
+    const MAX_MAXCHARS = 110;
+    Reflect.apply(Array.prototype.forEach, this._element.getElementsByClassName('dwst-gfx'), [maxDiv => {
+      const ref = maxDiv.getElementsByClassName('dwst-gfx__line')[0];
+      const refTextWidth = ref.offsetWidth;
+      const refTextLength = ref.textContent.length;
+      const refWidth = refTextWidth / refTextLength;
+      const windowWidth = window.innerWidth;
+      const maxFit = Math.floor(windowWidth / refWidth);
+      let leftMargin = 0;
+      if (maxFit < MAX_MAXCHARS) {
+        const invisible = MAX_MAXCHARS - maxFit;
+        const invisibleLeft = Math.round(invisible / 2);
+        leftMargin -= invisibleLeft;
+      }
+      const field = maxDiv.getElementsByClassName('dwst-gfx__content')[0];
+      field.setAttribute('style', `transform: initial; margin-left: ${leftMargin}ch;`);
+    }]);
+  }
+
+  _throttledUpdateGfxPositions() {
+    if (this._resizePending !== true) {
+      this._resizePending = true;
+      setTimeout(() => {
+        this._resizePending = false;
+        this.updateGfxPositions();
+      }, 100);
+    }
+  }
+
   init() {
     this._element.addEventListener('keydown', evt => this.globalKeyPress(evt));
     this._element.addEventListener('sendButtonClick', () => this.prompt.send());
-    this.terminal.init();
     this.prompt.init();
     this.sendButton.init();
     this.menuButton.init();
@@ -57,10 +90,11 @@ export default class Ui {
     this.scrollNotification.init();
     this._dwst.controller.silent('/splash');
     this.prompt.focus();
+    window.addEventListener('resize', () => this._throttledUpdateGfxPositions());
   }
 
   onLoad() {
-    this.terminal.onLoad();
     this.clock.onLoad();
+    this.updateGfxPositions();
   }
 }
