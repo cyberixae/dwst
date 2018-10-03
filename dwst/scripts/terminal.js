@@ -13,6 +13,8 @@
 */
 
 import utils from './utils.js';
+import renderLogEntry from './ui/log_entry.js';
+import renderGfx from './ui/gfx.js';
 import currenttime from './currenttime.js';
 
 export default class Terminal {
@@ -22,10 +24,6 @@ export default class Terminal {
     this._dwst = dwst;
     this._limit = 1000;
     this._resizePending = false;
-  }
-
-  _htmlescape(line) {
-    return line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   _hexdump(buffer) {
@@ -128,7 +126,7 @@ export default class Terminal {
     }]);
   }
 
-  addLogLine(logLine) {
+  _addLogItem(logLine) {
     const userWasScrolling = this.isUserScrolling();
     this._element.appendChild(logLine);
     while (this._element.childElementCount > this._limit) {
@@ -143,230 +141,33 @@ export default class Terminal {
   clearLog() {
     const logClear = document.createElement('div');
     logClear.setAttribute('class', 'dwst-log__clear');
-    this.addLogLine(logClear);
+    this._addLogItem(logClear);
   }
 
   gfx(lines, colors) {
+    const gfx = renderGfx(lines, colors);
 
-    const gfxContent = document.createElement('div');
-    gfxContent.setAttribute('class', 'dwst-gfx__content');
-    lines.forEach((line, li) => {
-      const logLine = document.createElement('div');
-      logLine.setAttribute('class', 'dwst-gfx__line');
-      [...line].forEach((chr, ci) => {
-        const color = colors[li][ci];
-        const outputCell = document.createElement('span');
-        outputCell.setAttribute('class', `dwst-gfx__element dwst-gfx__element--color-${color}`);
-        outputCell.innerHTML = chr;
-        logLine.appendChild(outputCell);
-      });
-      gfxContent.appendChild(logLine);
-    });
-    const background = document.createElement('div');
-    background.setAttribute('class', 'dwst-gfx__background');
-    const safe = document.createElement('div');
-    safe.setAttribute('class', 'dwst-debug__background-guide');
-    const safeco = document.createElement('div');
-    safeco.setAttribute('class', 'dwst-debug__content-guide');
-    safe.appendChild(safeco);
-    background.appendChild(safe);
-    gfxContent.appendChild(background);
+    const item = document.createElement('div');
+    item.setAttribute('class', 'dwst-log__item dwst-log__item--gfx');
+    item.appendChild(gfx);
 
-    const gfxContainer = document.createElement('div');
-    gfxContainer.setAttribute('class', 'dwst-log__item dwst-log__item--gfx dwst-gfx');
-    gfxContainer.setAttribute('aria-hidden', 'true');
-    gfxContainer.appendChild(gfxContent);
-
-    this.addLogLine(gfxContainer);
-
+    this._addLogItem(item);
     this._updateGfxPositions();
   }
 
-  mlog(lines, type) {
-    const lineElements = lines.map(rawLine => {
-      let line;
-      if (typeof rawLine === 'string') {
-        line = [rawLine];
-      } else if (typeof rawLine === 'object' && !Array.isArray(rawLine)) {
-        line = [rawLine];
-      } else {
-        line = rawLine;
-      }
-      if (!Array.isArray(line)) {
-        throw new Error('error');
-      }
-      const htmlSegments = line.map(rawSegment => {
-        let segment;
-        if (typeof rawSegment === 'string') {
-          segment = {
-            type: 'regular',
-            text: rawSegment,
-          };
-        } else {
-          segment = rawSegment;
-        }
-        if (typeof segment === 'object') {
-          const rawText = segment.text;
-          const safeText = (() => {
-            if (segment.hasOwnProperty('unsafe') && segment.unsafe === true) {
-              return rawText;
-            }
-            return this._htmlescape(rawText);
-          })();
+  mlog(mlogDescription, type) {
+    const linkHandlers = {
+      onHelpLinkClick: this._dwst.controller.onHelpLinkClick,
+      onCommandLinkClick: this._dwst.controller.onCommandLinkClick, 
+    };
 
-          if (segment.type === 'regular') {
-            const textSpan = document.createElement('span');
-            textSpan.innerHTML = safeText;
-            return textSpan;
-          }
-          if (segment.type === 'dwstgg') {
-            const linkWrapper = document.createElement('span');
-            const linkWrapperClasses = ['dwst-mlog__help-link-wrapper'];
-            if (segment.wrap === false) {
-              linkWrapperClasses.push('dwst-mlog__help-link-wrapper--nowrap');
-            }
-            linkWrapper.setAttribute('class', linkWrapperClasses.join(' '));
-            const link = document.createElement('a');
-            const classes = ['dwst-mlog__help-link'];
-            if (segment.spacing === true) {
-              classes.push('dwst-mlog__help-link--spacing');
-            }
-            if (segment.warning === true) {
-              classes.push('dwst-mlog__help-link--warning');
-            }
-            link.setAttribute('class', classes.join(' '));
-            const command = (() => {
-              if (segment.hasOwnProperty('section')) {
-                return `/help ${segment.section}`;
-              }
-              return '/help';
-            })();
-            link.onclick = (evt => {
-              evt.preventDefault();
-              this._dwst.controller.onHelpLinkClick(command);
-            });
-            link.setAttribute('href', '#');
-            link.setAttribute('title', command);
-            const textSpan = document.createElement('span');
-            textSpan.innerHTML = safeText;
-            link.appendChild(textSpan);
-            linkWrapper.appendChild(link);
-            if (segment.hasOwnProperty('afterText')) {
-              const afterTextNode = document.createTextNode(segment.afterText);
-              linkWrapper.appendChild(afterTextNode);
-            }
-            return linkWrapper;
-          }
-          if (segment.type === 'command') {
-            const link = document.createElement('a');
-            link.setAttribute('class', 'dwst-mlog__command-link');
-            const command = rawText;
-            link.onclick = (evt => {
-              evt.preventDefault();
-              this._dwst.controller.onCommandLinkClick(command);
-            });
-            link.setAttribute('href', '#');
-            link.setAttribute('title', safeText);
-            const textSpan = document.createElement('span');
-            textSpan.innerHTML = safeText;
-            link.appendChild(textSpan);
-            return link;
-          }
-          if (segment.type === 'hexline') {
-            const hexChunks = utils.chunkify(segment.hexes, 4);
-            const textChunks = utils.chunkify(rawText, 4);
+    const logLine = renderLogEntry(mlogDescription, type, linkHandlers);
 
-            const byteGrid = document.createElement('span');
-            const byteGridClasses = ['dwst-byte-grid'];
-            if (hexChunks.length < 3) {
-              byteGridClasses.push('dwst-byte-grid--less-than-three');
-            }
-            byteGrid.setAttribute('class', byteGridClasses.join(' '));
+    const item = document.createElement('div');
+    item.setAttribute('class', `dwst-log__item dwst-log__item--${type}`);
+    item.appendChild(logLine);
 
-            const chunksWanted = 4;
-            const chunkLength = 4;
-            [...Array(chunksWanted).keys()].forEach(i => {
-              const [hexChunk = []] = [hexChunks[i]];
-              const [textChunk = []] = [textChunks[i]];
-
-              const hexContent = this._htmlescape(hexChunk.join(' '));
-              const hexItem = document.createElement('span');
-              hexItem.setAttribute('class', 'dwst-byte-grid__item');
-              hexItem.innerHTML = hexContent;
-              byteGrid.appendChild(hexItem);
-
-              const textContent = this._htmlescape(textChunk.join('').padEnd(chunkLength));
-              const textItem = document.createElement('span');
-              textItem.setAttribute('class', 'dwst-byte-grid__item');
-              textItem.innerHTML = textContent;
-              byteGrid.appendChild(textItem);
-            });
-
-            const textSpan = document.createElement('span');
-            textSpan.setAttribute('class', 'dwst-mlog__hexline');
-            textSpan.appendChild(byteGrid);
-            return textSpan;
-          }
-          if (segment.type === 'code') {
-            const textSpan = document.createElement('span');
-            textSpan.setAttribute('class', 'dwst-mlog__code');
-            textSpan.innerHTML = safeText;
-            return textSpan;
-          }
-          if (segment.type === 'strong') {
-            const textSpan = document.createElement('span');
-            textSpan.setAttribute('class', 'dwst-mlog__strong');
-            textSpan.innerHTML = safeText;
-            return textSpan;
-          }
-          if (segment.type === 'h1') {
-            const textSpan = document.createElement('span');
-            textSpan.setAttribute('class', 'dwst-mlog__h1');
-            textSpan.innerHTML = safeText;
-            return textSpan;
-          }
-          if (segment.type === 'h2') {
-            const textSpan = document.createElement('span');
-            textSpan.setAttribute('class', 'dwst-mlog__h2');
-            textSpan.innerHTML = safeText;
-            return textSpan;
-          }
-          if (segment.type === 'syntax') {
-            const textSpan = document.createElement('span');
-            textSpan.setAttribute('class', 'dwst-mlog__syntax');
-            textSpan.innerHTML = safeText;
-            return textSpan;
-          }
-          if (segment.type === 'link') {
-            const textSpan = document.createElement('a');
-            textSpan.setAttribute('href', segment.url);
-            textSpan.setAttribute('target', '_blank');
-            textSpan.setAttribute('rel', 'noopener');
-            textSpan.setAttribute('class', 'dwst-mlog__link');
-            textSpan.innerHTML = safeText;
-            return textSpan;
-          }
-        }
-        throw new Error('unknown segment type');
-      });
-      return htmlSegments;
-    });
-    const time = currenttime();
-    const logLine = document.createElement('div');
-    logLine.setAttribute('class', `dwst-log__item dwst-log__item--${type} dwst-log-entry`);
-    logLine.innerHTML = `<span class="dwst-log-entry__time dwst-time">${time}</span><span class="dwst-log-entry__direction dwst-direction dwst-direction--${type}">${type}:</span>`;
-    const outputCell = document.createElement('span');
-    outputCell.setAttribute('class', 'dwst-log-entry__content dwst-mlog');
-    lineElements.forEach(lineElement => {
-      lineElement.forEach(segmentElement => {
-        outputCell.appendChild(segmentElement);
-      });
-      const br = document.createElement('br');
-      br.setAttribute('class', 'dwst-mlog__br');
-      outputCell.appendChild(br);
-    });
-    logLine.appendChild(outputCell);
-    this.addLogLine(logLine);
+    this._addLogItem(item);
   }
 
   log(line, type) {
@@ -411,5 +212,3 @@ export default class Terminal {
     this._updateGfxPositions();
   }
 }
-
-
