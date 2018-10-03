@@ -181,12 +181,6 @@ export default class Terminal {
 
   init() {
     window.addEventListener('resize', () => this._throttledUpdateGfxPositions());
-    [...document.getElementsByClassName('js-auto-scroll-button')].forEach(asb => {
-      asb.addEventListener('click', evt => {
-        evt.preventDefault();
-        this.scrollLog();
-      });
-    });
   }
 
   onLoad() {

@@ -17,6 +17,7 @@ import Clock from './components/clock.js';
 import Prompt from './components/prompt.js';
 import SendButton from './components/send_button.js';
 import MenuButton from './components/menu_button.js';
+import AutoScrollButton from './components/auto_scroll_button.js';
 import ScrollNotification from './components/scroll_notification.js';
 
 export default class Ui {
@@ -29,6 +30,7 @@ export default class Ui {
     this.prompt = new Prompt(element.getElementById('msg1'), this._dwst);
     this.sendButton = new SendButton(element.getElementById('sendbut1'), this._dwst);
     this.menuButton = new MenuButton(element.getElementById('menubut1'), this._dwst);
+    this.autoScrollButton = new AutoScrollButton(element.getElementsByClassName('js-auto-scroll-button')[0], this._dwst);
     this.scrollNotification = new ScrollNotification(element.getElementsByClassName('js-scroll-notification')[0], this._dwst);
   }
 
@@ -49,6 +51,7 @@ export default class Ui {
     this.prompt.init();
     this.sendButton.init();
     this.menuButton.init();
+    this.autoScrollButton.init();
     this.scrollNotification.init();
     this._dwst.controller.silent('/splash');
     this.prompt.focus();
