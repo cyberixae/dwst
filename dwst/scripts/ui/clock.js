@@ -12,7 +12,7 @@
 
 */
 
-import currenttime from '../currenttime.js';
+import renderTime from './time.js';
 
 export default class Clock {
 
@@ -22,8 +22,7 @@ export default class Clock {
   }
 
   refreshClock() {
-    const time = currenttime();
-    this._element.innerHTML = time;
+    this._element.innerHTML = renderTime(true);
   }
 
   startClock() {

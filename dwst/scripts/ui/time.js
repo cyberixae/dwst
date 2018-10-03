@@ -12,7 +12,7 @@
 
 */
 
-export default function currenttime() {
+export default function renderTime(contentOnly = false) {
   const addzero = function (i) {
     if (i < 10) {
       return `0${i}`;
@@ -20,7 +20,16 @@ export default function currenttime() {
     return String(i);
   };
   const date = new Date();
-  const time = `${addzero(date.getHours())}:${addzero(date.getMinutes())}<span class="dwst-time__sec">:${addzero(date.getSeconds())}</span>`;
+  const content = `${addzero(date.getHours())}:${addzero(date.getMinutes())}<span class="dwst-time__sec">:${addzero(date.getSeconds())}</span>`;
+
+  if (contentOnly) {
+    return content;
+  }
+
+  const time = document.createElement('span');
+  time.setAttribute('class', 'dwst-time');
+  time.innerHTML = content;
+
   return time;
 
 }
