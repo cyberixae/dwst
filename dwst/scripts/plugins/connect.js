@@ -66,14 +66,14 @@ export default class Connect {
       const invalidChars = [...invalidCharsSet];
       if (invalidChars.length > 0) {
         const invalidCharsString = invalidChars.map(character => `"${character}"`).join(', ');
-        this._dwst.terminal.mlog([`Skipped invalid protocol candidate "${protocolName}".`, `The following characters are not allowed: ${invalidCharsString}`], 'warning');
+        this._dwst.ui.terminal.mlog([`Skipped invalid protocol candidate "${protocolName}".`, `The following characters are not allowed: ${invalidCharsString}`], 'warning');
         return false;
       }
       return true;
     });
     if (self.origin.startsWith('https://') && url.startsWith('ws://')) {
       const secureUrl = `wss://${url.slice('ws://'.length)}`;
-      this._dwst.terminal.mlog([
+      this._dwst.ui.terminal.mlog([
         [
           'Attempting unprotected connection from a secure origin. ',
           'See ',
@@ -98,7 +98,7 @@ export default class Connect {
       }
       return [`Accepted protocols: ${protoFormatted}`];
     })();
-    this._dwst.terminal.mlog([`Connecting to ${this._dwst.connection.url}`].concat(negotiation), 'system');
+    this._dwst.ui.terminal.mlog([`Connecting to ${this._dwst.connection.url}`].concat(negotiation), 'system');
   }
 
   run(paramString) {

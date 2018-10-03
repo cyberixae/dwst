@@ -100,7 +100,7 @@ export default class Help {
 
   _mainHelp() {
 
-    this._dwst.terminal.mlog([
+    this._dwst.ui.terminal.mlog([
       this._createBreadCrumbs(),
       '',
       {
@@ -183,7 +183,7 @@ export default class Help {
     ];
 
     if (page === '#chrome') {
-      this._dwst.terminal.mlog(([
+      this._dwst.ui.terminal.mlog(([
         this._createBreadCrumbs(page),
         '',
         {
@@ -226,7 +226,7 @@ export default class Help {
       return;
     }
     if (page === '#firefox') {
-      this._dwst.terminal.mlog(([
+      this._dwst.ui.terminal.mlog(([
         this._createBreadCrumbs(page),
         '',
         {
@@ -259,7 +259,7 @@ export default class Help {
       return;
     }
     if (page === '#developing') {
-      this._dwst.terminal.mlog(([
+      this._dwst.ui.terminal.mlog(([
         this._createBreadCrumbs(page),
         '',
         {
@@ -300,7 +300,7 @@ export default class Help {
           text: c,
         };
       });
-      this._dwst.terminal.mlog(([
+      this._dwst.ui.terminal.mlog(([
         this._createBreadCrumbs(page),
         '',
         {
@@ -326,7 +326,7 @@ export default class Help {
       return;
     }
     if (page === '#styleguide') {
-      this._dwst.terminal.mlog(([
+      this._dwst.ui.terminal.mlog(([
         this._createBreadCrumbs(page),
         '',
         {
@@ -347,7 +347,7 @@ export default class Help {
       return;
     }
     if (page === '#unprotected') {
-      this._dwst.terminal.mlog([
+      this._dwst.ui.terminal.mlog([
         this._createBreadCrumbs(page),
         '',
         {
@@ -454,7 +454,7 @@ export default class Help {
         'This describes how we do things today. ',
         'Check this page again sometime for possible updates on privacy and tracking considerations.',
       ];
-      this._dwst.terminal.mlog(([
+      this._dwst.ui.terminal.mlog(([
         this._createBreadCrumbs(page),
         '',
         {
@@ -474,7 +474,7 @@ export default class Help {
       return;
     }
     if (page === '#introduction') {
-      this._dwst.terminal.mlog([
+      this._dwst.ui.terminal.mlog([
         this._createBreadCrumbs(page),
         '',
         {
@@ -569,7 +569,7 @@ export default class Help {
     if (page === '#commands') {
       const commandsList = this._commandsList();
 
-      this._dwst.terminal.mlog([
+      this._dwst.ui.terminal.mlog([
         this._createBreadCrumbs(page),
         '',
         {
@@ -599,7 +599,7 @@ export default class Help {
       throw new UnknownCommand(command);
     }
     if (typeof plugin.usage === 'undefined') {
-      this._dwst.terminal.log(`no help available for: ${command}`, 'system');
+      this._dwst.ui.terminal.log(`no help available for: ${command}`, 'system');
       return;
     }
     const usage = plugin.usage().map(usageExample => {
@@ -615,7 +615,7 @@ export default class Help {
       };
     });
 
-    this._dwst.terminal.mlog([
+    this._dwst.ui.terminal.mlog([
       this._createBreadCrumbs(command),
       '',
       [
@@ -651,7 +651,7 @@ export default class Help {
 
   _run(parameter = null) {
 
-    this._dwst.terminal.clearLog();
+    this._dwst.ui.terminal.clearLog();
 
     if (parameter === null) {
       this._mainHelp();

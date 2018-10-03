@@ -45,7 +45,7 @@ export default class Bins {
     if (variable !== null) {
       const buffer = this._dwst.bins.get(variable);
       if (typeof buffer !== 'undefined') {
-        this._dwst.terminal.blog(buffer, 'system');
+        this._dwst.ui.terminal.blog(buffer, 'system');
         return;
       }
       throw new UnknownBinary(variable);
@@ -54,7 +54,7 @@ export default class Bins {
       return `"${name}": <${buffer.byteLength}B of binary data>`;
     });
     const strs = ['Loaded binaries:'].concat(listing);
-    this._dwst.terminal.mlog(strs, 'system');
+    this._dwst.ui.terminal.mlog(strs, 'system');
   }
 
   run(paramString) {

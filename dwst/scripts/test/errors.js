@@ -165,7 +165,9 @@ describe('errors module', () => {
 
     beforeEach(() => {
       fakedwst = {
-        terminal: new TerminalSimulator(),
+        ui: {
+          terminal: new TerminalSimulator(),
+        },
       };
     });
 
@@ -176,19 +178,19 @@ describe('errors module', () => {
       }).to.throw(Error).that.does.include({
         message: 'missing error handler for UnexpectedDwstError',
       });
-      expect(fakedwst.terminal.mlogCalled).to.be.false;
-      expect(fakedwst.terminal.mlogs).to.deep.equal([]);
-      expect(fakedwst.terminal.mlogTypes).to.deep.equal([]);
+      expect(fakedwst.ui.terminal.mlogCalled).to.be.false;
+      expect(fakedwst.ui.terminal.mlogs).to.deep.equal([]);
+      expect(fakedwst.ui.terminal.mlogTypes).to.deep.equal([]);
     });
     it('should mlog InvalidParticles error', () => {
       errorHandler(fakedwst, new InvalidParticles());
-      expect(fakedwst.terminal.mlogCalled).to.be.true;
-      expect(fakedwst.terminal.mlogs).to.deep.equal([
+      expect(fakedwst.ui.terminal.mlogCalled).to.be.true;
+      expect(fakedwst.ui.terminal.mlogs).to.deep.equal([
         [
           'Syntax error.',
         ],
       ]);
-      expect(fakedwst.terminal.mlogTypes).to.deep.equal(['error']);
+      expect(fakedwst.ui.terminal.mlogTypes).to.deep.equal(['error']);
     });
   });
 });
