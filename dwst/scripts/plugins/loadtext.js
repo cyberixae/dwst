@@ -42,6 +42,7 @@ export default class Loadtext {
 
   _run(variable = 'default', encoding) {
     const that = this;
+    // TODO move file reading to ui
     const upload = document.getElementById('file1');
     upload.onchange = () => {
       const file = upload.files[0];

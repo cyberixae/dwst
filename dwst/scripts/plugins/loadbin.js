@@ -41,6 +41,7 @@ export default class Loadbin {
 
   _run(variable = 'default') {
     const that = this;
+    // TODO move file reading to ui
     const upload = document.getElementById('file1');
     upload.onchange = () => {
       const file = upload.files[0];
