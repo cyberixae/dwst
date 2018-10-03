@@ -20,6 +20,7 @@ import MenuButton from './components/menu_button.js';
 import Screen from './components/screen.js';
 import AutoScrollButton from './components/auto_scroll_button.js';
 import ScrollNotification from './components/scroll_notification.js';
+import FileInput from './components/file_input.js';
 
 export default class Ui {
 
@@ -36,6 +37,7 @@ export default class Ui {
     this.screen = new Screen(element.getElementById('screen1'), this._dwst);
     this.autoScrollButton = new AutoScrollButton(element.getElementsByClassName('js-auto-scroll-button')[0], this._dwst);
     this.scrollNotification = new ScrollNotification(element.getElementsByClassName('js-scroll-notification')[0], this._dwst);
+    this.fileInput = new FileInput(element.getElementById('fileframe'), this._dwst);
   }
 
   globalKeyPress(event) {
