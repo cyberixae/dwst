@@ -12,8 +12,8 @@
 
 */
 
-import renderLogEntry from './log_entry.js';
-import renderGfx from './gfx.js';
+import renderLogEntry from './renderers/log_entry.js';
+import renderGfx from './renderers/gfx.js';
 
 export default class Terminal {
 

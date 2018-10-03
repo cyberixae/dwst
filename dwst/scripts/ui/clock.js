@@ -12,7 +12,7 @@
 
 */
 
-import renderTime from './time.js';
+import renderTime from './renderers/time.js';
 
 export default class Clock {
 
