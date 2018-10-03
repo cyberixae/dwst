@@ -12,11 +12,11 @@
 
 */
 
-import Terminal from './terminal.js';
-import Clock from './clock.js';
-import Prompt from './prompt.js';
-import SendButton from './send_button.js';
-import MenuButton from './menu_button.js';
+import Terminal from './components/terminal.js';
+import Clock from './components/clock.js';
+import Prompt from './components/prompt.js';
+import SendButton from './components/send_button.js';
+import MenuButton from './components/menu_button.js';
 
 export default class Ui {
 

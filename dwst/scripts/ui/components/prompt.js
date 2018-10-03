@@ -13,7 +13,7 @@
 
 */
 
-import {escapeForParticles} from '../particles.js';
+import {escapeForParticles} from '../../particles.js';
 
 export default class Prompt {
 
