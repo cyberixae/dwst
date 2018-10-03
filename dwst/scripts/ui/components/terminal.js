@@ -24,6 +24,10 @@ export default class Terminal {
     this._resizePending = false;
   }
 
+  reset() {
+    this._element.innerHTML = '';
+  }
+
   _hexdump(buffer) {
     function hexify(num) {
       const hex = num.toString(16);

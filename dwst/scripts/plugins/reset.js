@@ -39,7 +39,7 @@ export default class Reset {
   }
 
   run() {
-    document.getElementById('ter1').innerHTML = '';
+    this._dwst.ui.terminal.reset();
   }
 }
 
