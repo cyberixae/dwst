@@ -29,15 +29,15 @@ export default class Ui {
     this._dwst = dwst;
     this._resizePending = false;
 
-    this.terminal = new Terminal(element.getElementById('ter1'), this._dwst);
-    this.clock = new Clock(element.getElementById('clock1'), this._dwst);
-    this.prompt = new Prompt(element.getElementById('msg1'), this._dwst);
-    this.sendButton = new SendButton(element.getElementById('sendbut1'), this._dwst);
-    this.menuButton = new MenuButton(element.getElementById('menubut1'), this._dwst);
-    this.screen = new Screen(element.getElementById('screen1'), this._dwst);
-    this.autoScrollButton = new AutoScrollButton(element.getElementsByClassName('js-auto-scroll-button')[0], this._dwst);
-    this.scrollNotification = new ScrollNotification(element.getElementsByClassName('js-scroll-notification')[0], this._dwst);
-    this.fileInput = new FileInput(element.getElementById('fileframe'), this._dwst);
+    this.terminal = new Terminal(element.getElementById('js-terminal'), this._dwst);
+    this.clock = new Clock(element.getElementById('js-clock'), this._dwst);
+    this.prompt = new Prompt(element.getElementById('js-prompt'), this._dwst);
+    this.sendButton = new SendButton(element.getElementById('js-send-button'), this._dwst);
+    this.menuButton = new MenuButton(element.getElementById('js-menu-button'), this._dwst);
+    this.screen = new Screen(element.getElementById('js-screen'), this._dwst);
+    this.autoScrollButton = new AutoScrollButton(element.getElementById('js-auto-scroll-button'), this._dwst);
+    this.scrollNotification = new ScrollNotification(element.getElementById('js-scroll-notification'), this._dwst);
+    this.fileInput = new FileInput(element.getElementById('js-file-input'), this._dwst);
   }
 
   globalKeyPress(event) {

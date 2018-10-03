@@ -46,7 +46,6 @@ export default class Loadtext {
       const reader = new FileReader();
       reader.onload = function (evt) {
         const text = evt.target.result;
-        console.log(file);
         that._dwst.texts.set(variable, text);
         that._dwst.ui.terminal.log(`Text file ${file.name} (${text.length}B) loaded to "${variable}"`, 'system');
       };
