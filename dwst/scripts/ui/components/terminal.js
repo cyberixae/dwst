@@ -83,27 +83,7 @@ export default class Terminal {
   scrollLog() {
     const screen = document.getElementById('screen1');
     screen.scrollTop = screen.scrollHeight;
-    this.hideScrollNotification();
-  }
-
-  scrollNotificationUpdate() {
-    if (this.isUserScrolling()) {
-      this.showScrollNotification();
-      return;
-    }
-    this.hideScrollNotification();
-  }
-
-  showScrollNotification() {
-    [...document.getElementsByClassName('js-scroll-notification')].forEach(sn => {
-      sn.removeAttribute('style');
-    });
-  }
-
-  hideScrollNotification() {
-    [...document.getElementsByClassName('js-scroll-notification')].forEach(sn => {
-      sn.setAttribute('style', 'display: none;');
-    });
+    this._dwst.ui.scrollNotification.hideScrollNotification();
   }
 
   _updateGfxPositions() {
@@ -207,7 +187,6 @@ export default class Terminal {
         this.scrollLog();
       });
     });
-    setInterval(() => this.scrollNotificationUpdate(), 1000);
   }
 
   onLoad() {
