@@ -30,7 +30,7 @@ export default class MenuButton {
   init() {
     this._element.addEventListener('click', () => {
       this._dwst.controller.loud('/splash');
-      this._dwst.ui.terminal.scrollLog();
+      this._dwst.ui.screen.scrollLog();
     });
   }
 }
