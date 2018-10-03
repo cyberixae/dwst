@@ -19,6 +19,14 @@ export default class MenuButton {
     this._dwst = dwst;
   }
 
+  connected(state) {
+    if (state) {
+      this._element.classList.replace('dwst-button--splash', 'dwst-button--splash-connected');
+    } else {
+      this._element.classList.replace('dwst-button--splash-connected', 'dwst-button--splash');
+    }
+  }
+
   init() {
     this._element.addEventListener('click', () => {
       this._dwst.controller.loud('/splash');

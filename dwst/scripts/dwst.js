@@ -59,9 +59,7 @@ const controller = {
       return [`Selected protocol: ${protocol}`];
     })();
     pluginInterface.ui.terminal.mlog(['Connection established.'].concat(selected), 'system');
-    [...document.getElementsByClassName('dwst-button--splash')].forEach(element => {
-      element.classList.replace('dwst-button--splash', 'dwst-button--splash-connected');
-    });
+    pluginInterface.ui.menuButton.connected(true);
   },
 
   onSocketClose: (e, sessionLength) => {
@@ -99,9 +97,7 @@ const controller = {
     })();
     pluginInterface.ui.terminal.mlog(['Connection closed.', `Close status: ${code}`].concat(reason).concat(sessionLengthString), 'system');
     pluginInterface.connection = null;
-    [...document.getElementsByClassName('dwst-button--splash-connected')].forEach(element => {
-      element.classList.replace('dwst-button--splash-connected', 'dwst-button--splash');
-    });
+    pluginInterface.ui.menuButton.connected(false);
   },
 
   onSocketMessage: msg => {
