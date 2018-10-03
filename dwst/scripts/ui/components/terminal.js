@@ -67,25 +67,6 @@ export default class Terminal {
     return lines;
   }
 
-  isUserScrolling() {
-    const errorMargin = 1;
-    // Some device pixel ratios create problems when errorMargin < 1.
-    // Try to use Windows 10 with 125%, 175% and 225% scaling.
-    const screen = document.getElementById('screen1');
-    const contentHeight = screen.scrollHeight;
-    const visible = screen.offsetHeight;
-    const invisible = contentHeight - visible;
-    const invisibleAbove = screen.scrollTop;
-    const invisibleBelow = invisible - invisibleAbove;
-    return invisibleBelow > errorMargin;
-  }
-
-  scrollLog() {
-    const screen = document.getElementById('screen1');
-    screen.scrollTop = screen.scrollHeight;
-    this._dwst.ui.scrollNotification.hideScrollNotification();
-  }
-
   _updateGfxPositions() {
     // Updating gfx positions with this method disables basic centering
     // and aligns the text in the gfx section with the text in log lines.
@@ -109,7 +90,7 @@ export default class Terminal {
   }
 
   _addLogItem(logLine) {
-    const userWasScrolling = this.isUserScrolling();
+    const userWasScrolling = this._dwst.ui.screen.isUserScrolling();
     this._element.appendChild(logLine);
     while (this._element.childElementCount > this._limit) {
       this._element.removeChild(this._element.firstChild);
@@ -117,7 +98,7 @@ export default class Terminal {
     if (userWasScrolling) {
       return;
     }
-    this.scrollLog();
+    this._dwst.ui.screen.scrollLog();
   }
 
   clearLog() {

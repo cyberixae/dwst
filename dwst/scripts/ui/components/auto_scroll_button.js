@@ -22,7 +22,7 @@ export default class AutoScrollButton {
   init() {
     this._element.addEventListener('click', evt => {
       evt.preventDefault();
-      this._dwst.ui.terminal.scrollLog();
+      this._dwst.ui.screen.scrollLog();
     });
   }
 }
