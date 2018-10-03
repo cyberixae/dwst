@@ -12,10 +12,8 @@
 
 */
 
-import utils from './utils.js';
-import renderLogEntry from './ui/log_entry.js';
-import renderGfx from './ui/gfx.js';
-import currenttime from './currenttime.js';
+import renderLogEntry from './log_entry.js';
+import renderGfx from './gfx.js';
 
 export default class Terminal {
 
@@ -158,7 +156,7 @@ export default class Terminal {
   mlog(mlogDescription, type) {
     const linkHandlers = {
       onHelpLinkClick: this._dwst.controller.onHelpLinkClick,
-      onCommandLinkClick: this._dwst.controller.onCommandLinkClick, 
+      onCommandLinkClick: this._dwst.controller.onCommandLinkClick,
     };
 
     const logLine = renderLogEntry(mlogDescription, type, linkHandlers);

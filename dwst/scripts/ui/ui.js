@@ -12,7 +12,7 @@
 
 */
 
-import Terminal from '../terminal.js';
+import Terminal from './terminal.js';
 import Clock from './clock.js';
 import Prompt from './prompt.js';
 import SendButton from './send_button.js';
