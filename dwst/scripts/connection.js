@@ -90,7 +90,7 @@ export default class Connection {
 
   _onopen() {
     this.sessionStartTime = (new Date()).getTime();
-    this._controller.onConnectionOpen(this.ws.protocol);
+    this._controller.onSocketOpen(this.ws.protocol);
   }
 
   _onclose(e) {
@@ -101,15 +101,15 @@ export default class Connection {
       const currentTime = (new Date()).getTime();
       return currentTime - this.sessionStartTime;
     })();
-    this._controller.onConnectionClose(e, sessionLength);
+    this._controller.onSocketClose(e, sessionLength);
   }
 
   _onmessage(msg) {
-    this._controller.onMessage(msg.data);
+    this._controller.onSocketMessage(msg.data);
   }
 
   _onerror() {
-    this._controller.onError();
+    this._controller.onSocketError();
   }
 
   get url() {

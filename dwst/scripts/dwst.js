@@ -51,7 +51,7 @@ const controller = {
     loud(command);
   },
 
-  onConnectionOpen: protocol => {
+  onSocketOpen: protocol => {
     const selected = (() => {
       if (protocol.length < 1) {
         return [];
@@ -62,7 +62,7 @@ const controller = {
     pluginInterface.ui.menuButton.connected(true);
   },
 
-  onConnectionClose: (e, sessionLength) => {
+  onSocketClose: (e, sessionLength) => {
     const meanings = {
       1000: 'Normal Closure',
       1001: 'Going Away',
@@ -100,7 +100,7 @@ const controller = {
     pluginInterface.ui.menuButton.connected(false);
   },
 
-  onMessage: msg => {
+  onSocketMessage: msg => {
     if (typeof msg === 'string') {
       pluginInterface.ui.terminal.log(msg, 'received');
     } else {
@@ -113,7 +113,7 @@ const controller = {
     }
   },
 
-  onError: () => {
+  onSocketError: () => {
     pluginInterface.ui.terminal.log('WebSocket error.', 'error');
   },
 
