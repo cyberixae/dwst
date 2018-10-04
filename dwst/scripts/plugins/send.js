@@ -12,8 +12,7 @@
 
 */
 
-import utils from '../utils.js';
-import {parseParticles, InvalidParticles} from '../particles.js';
+import {InvalidParticles} from '../particles.js';
 
 class UnknownInstruction extends Error {
 
@@ -70,7 +69,7 @@ export default class Send {
       };
       let num = 16;
       if (params.length === 1) {
-        num = utils.parseNum(params[0]);
+        num = this._dwst.lib.utils.parseNum(params[0]);
       }
       let str = '';
       for (let i = 0; i < num; i++) {
@@ -92,11 +91,11 @@ export default class Send {
       let start = 32;
       let end = 126;
       if (params.length === 1) {
-        end = utils.parseNum(params[0]);
+        end = this._dwst.lib.utils.parseNum(params[0]);
       }
       if (params.length === 2) {
-        start = utils.parseNum(params[0]);
-        end = utils.parseNum(params[1]);
+        start = this._dwst.lib.utils.parseNum(params[0]);
+        end = this._dwst.lib.utils.parseNum(params[1]);
       }
       let str = '';
       for (let i = start; i <= end; i++) {
@@ -110,7 +109,7 @@ export default class Send {
   run(paramString) {
     let parsed;
     try {
-      parsed = parseParticles(paramString);
+      parsed = this._dwst.lib.particles.parseParticles(paramString);
     } catch (e) {
       if (e instanceof InvalidParticles) {
         this._dwst.ui.terminal.mlog(['Syntax error.'], 'error');

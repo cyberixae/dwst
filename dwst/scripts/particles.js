@@ -191,7 +191,7 @@ function readParticle(parsee) {
   return readDefaultParticle(parsee);
 }
 
-export function parseParticles(particleString) {
+function parseParticles(particleString) {
   const parsedParticles = [];
   const parsee = new Parsee(particleString);
   while (parsee.length > 0) {
@@ -201,7 +201,7 @@ export function parseParticles(particleString) {
   return parsedParticles;
 }
 
-export function escapeForParticles(textString) {
+function escapeForParticles(textString) {
   const replmap = [
     ['$', '\\$'],
     ['\\', '\\\\'],
@@ -229,4 +229,7 @@ export function escapeForParticles(textString) {
   return complete;
 }
 
-export default parseParticles;
+export default {
+  parseParticles,
+  escapeForParticles,
+};

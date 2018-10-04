@@ -16,8 +16,11 @@
 import config from './models/config.js';
 import History from './models/history.js';
 import Plugins from './models/plugins.js';
-import Dwstgg from './dwstgg/dwstgg.js';
 
+import particles from './particles.js';
+import utils from './utils.js';
+
+import Dwstgg from './dwstgg/dwstgg.js';
 import Ui from './ui/ui.js';
 
 import LinkHandler from './controllers/links.js';
@@ -57,6 +60,7 @@ function loadHistory() {
 const dwst = Object.seal({
   model: {},
   controller: {},
+  lib: {},
   plugins: null,
   ui: null,
 });
@@ -73,6 +77,9 @@ dwst.model.spam = null;       // FIXME spam model?
 dwst.controller.link = new LinkHandler(dwst);
 dwst.controller.prompt = new PromptHandler(dwst);
 dwst.controller.socket = new SocketHandler(dwst);
+
+dwst.lib.utils = utils;
+dwst.lib.particles = particles;
 
 dwst.plugins = new Plugins(dwst, [
   Binary,
