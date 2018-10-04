@@ -13,8 +13,11 @@
 
 */
 
-import {parseParticles, escapeForParticles, InvalidParticles} from '../particles.js';
+import particles from '../particles.js';
+import {InvalidParticles} from '../particles.js'; // eslint-disable-line no-duplicate-imports
 import {expect} from 'chai';
+
+const {escapeForParticles, parseParticles} = particles;
 
 describe('particles module', () => {
   describe('escapeForParticles function', () => {

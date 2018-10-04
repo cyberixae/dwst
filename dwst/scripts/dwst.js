@@ -15,9 +15,10 @@
 
 import config from './config.js';
 
+import particles from './particles.js';
+import utils from './utils.js';
 import HistoryManager from './history_manager.js';
 import Dwstgg from './dwstgg/dwstgg.js';
-
 import Ui from './ui/ui.js';
 
 import Binary from './plugins/binary.js';
@@ -129,6 +130,8 @@ const pluginInterface = {
   ECHO_SERVER_URL: config.echoServer,
 
   controller,
+  utils,
+  particles,
   historyManager: null,
   connection: null,
   commands: null,

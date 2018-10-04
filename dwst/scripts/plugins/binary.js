@@ -12,8 +12,7 @@
 
 */
 
-import utils from '../utils.js';
-import {parseParticles, InvalidParticles} from '../particles.js';
+import {InvalidParticles} from '../particles.js';
 
 class UnknownInstruction extends Error {
 
@@ -102,7 +101,7 @@ export default class Binary {
       };
       let num = 16;
       if (params.length === 1) {
-        num = utils.parseNum(params[0]);
+        num = this._dwst.utils.parseNum(params[0]);
       }
       const bytes = [];
       for (let i = 0; i < num; i++) {
@@ -114,11 +113,11 @@ export default class Binary {
       let start = 0;
       let end = 0xff;
       if (params.length === 1) {
-        end = utils.parseNum(params[0]);
+        end = this._dwst.utils.parseNum(params[0]);
       }
       if (params.length === 2) {
-        start = utils.parseNum(params[0]);
-        end = utils.parseNum(params[1]);
+        start = this._dwst.utils.parseNum(params[0]);
+        end = this._dwst.utils.parseNum(params[1]);
       }
       const bytes = [];
       for (let i = start; i <= end; i++) {
@@ -156,7 +155,7 @@ export default class Binary {
       if (params.length === 1) {
         const hex = params[0];
         const nums = hex.split('');
-        const pairs = utils.chunkify(nums, 2);
+        const pairs = this._dwst.utils.chunkify(nums, 2);
         const tmp = pairs.map(hexpairtobyte);
         bytes = tmp.filter(b => (b !== null));
       } else {
@@ -171,7 +170,7 @@ export default class Binary {
   run(paramString) {
     let parsed;
     try {
-      parsed = parseParticles(paramString);
+      parsed = this._dwst.particles.parseParticles(paramString);
     } catch (e) {
       if (e instanceof InvalidParticles) {
         this._dwst.ui.terminal.mlog(['Syntax error.'], 'error');

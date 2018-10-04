@@ -12,8 +12,6 @@
 
 */
 
-import utils from '../utils.js';
-
 export default class Spam {
 
   constructor(dwst) {
@@ -42,7 +40,7 @@ export default class Spam {
   }
 
   _run(timesStr, ...commandParts) {
-    const times = utils.parseNum(timesStr);
+    const times = this._dwst.utils.parseNum(timesStr);
     const [command, payload] = (() => {
       if (commandParts.length < 1) {
         return ['send', null];

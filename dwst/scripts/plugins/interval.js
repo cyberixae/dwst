@@ -12,8 +12,6 @@
 
 */
 
-import utils from '../utils.js';
-
 export default class Interval {
 
   constructor(dwst) {
@@ -80,7 +78,7 @@ export default class Interval {
       return;
     }
     let count = 0;
-    const interval = utils.parseNum(intervalStr);
+    const interval = this._dwst.utils.parseNum(intervalStr);
     const spammer = () => {
       const message = (() => {
         if (payload === null) {
