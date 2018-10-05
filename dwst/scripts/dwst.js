@@ -40,7 +40,7 @@ import Spam from './plugins/spam.js';
 import Splash from './plugins/splash.js';
 import Texts from './plugins/texts.js';
 
-const pluginInterface = {
+const dwst = {
   connection: null, // FIXME connection model
   bins: new Map(),  // FIXME bin model
   texts: new Map(), // FIXME text model
@@ -55,15 +55,15 @@ const pluginInterface = {
   plugins: null,
 };
 
-pluginInterface.controller = {
-  link: new LinkHandler(pluginInterface),
-  prompt: new PromptHandler(pluginInterface),
-  socket: new SocketHandler(pluginInterface),
+dwst.controller = {
+  link: new LinkHandler(dwst),
+  prompt: new PromptHandler(dwst),
+  socket: new SocketHandler(dwst),
 };
 
-pluginInterface.dwstgg = new Dwstgg(pluginInterface);
+dwst.dwstgg = new Dwstgg(dwst);
 
-pluginInterface.plugins = new Plugins(pluginInterface, [
+dwst.plugins = new Plugins(dwst, [
   Binary,
   Bins,
   Clear,
@@ -92,17 +92,17 @@ function loadSaves() {
   if (response !== null) {
     history = JSON.parse(response);
   }
-  pluginInterface.model.history = new History(history, {save});
+  dwst.model.history = new History(history, {save});
 }
 
 function init() {
   loadSaves();
-  pluginInterface.ui = new Ui(document, pluginInterface);
-  pluginInterface.ui.init();
+  dwst.ui = new Ui(document, dwst);
+  dwst.ui.init();
 }
 
 function onLoad() {
-  pluginInterface.ui.onLoad();
+  dwst.ui.onLoad();
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service_worker.js');
   }
@@ -113,5 +113,5 @@ window.addEventListener('load', onLoad);
 
 // plugin interface developer access for live debugging
 if (typeof window === 'object') {
-  window._dwst = pluginInterface;
+  window._dwst = dwst;
 }
