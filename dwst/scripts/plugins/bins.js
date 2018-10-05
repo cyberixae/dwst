@@ -41,7 +41,7 @@ export default class Bins {
 
   _run(variable = null) {
     if (variable !== null) {
-      const buffer = this._dwst.bins.get(variable);
+      const buffer = this._dwst.model.bins.get(variable);
       if (typeof buffer !== 'undefined') {
         this._dwst.ui.terminal.blog(buffer, 'system');
         return;
@@ -57,7 +57,7 @@ export default class Bins {
       this._dwst.ui.terminal.mlog([`Binary "${variable}" does not exist.`, listTip], 'error');
       return;
     }
-    const listing = [...this._dwst.bins.entries()].map(([name, buffer]) => {
+    const listing = [...this._dwst.model.bins.entries()].map(([name, buffer]) => {
       return `"${name}": <${buffer.byteLength}B of binary data>`;
     });
     const strs = ['Loaded binaries:'].concat(listing);

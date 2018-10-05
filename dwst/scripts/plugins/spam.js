@@ -79,7 +79,7 @@ export default class Spam {
         }
         return payload;
       })();
-      if (this._dwst.connection === null || this._dwst.connection.isOpen() === false) {
+      if (this._dwst.model.connection === null || this._dwst.model.connection.isOpen() === false) {
         this._dwst.ui.terminal.log('spam failed, no connection', 'error');
         return;
       }

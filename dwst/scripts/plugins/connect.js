@@ -44,7 +44,7 @@ export default class Connect {
   }
 
   _run(url, protocolString = '') {
-    if (this._dwst.connection !== null) {
+    if (this._dwst.model.connection !== null) {
       this._dwst.ui.terminal.mlog([
         'Already connected to a server',
         [
@@ -100,7 +100,7 @@ export default class Connect {
         ],
       ], 'warning');
     }
-    this._dwst.connection = new Connection(url, protocols, this._dwst.controller.socket);
+    this._dwst.model.connection = new Connection(url, protocols, this._dwst.controller.socket);
     const protoFormatted = protocols.join(', ');
     const negotiation = (() => {
       if (protocols.length < 1) {
@@ -108,7 +108,7 @@ export default class Connect {
       }
       return [`Accepted protocols: ${protoFormatted}`];
     })();
-    this._dwst.ui.terminal.mlog([`Connecting to ${this._dwst.connection.url}`].concat(negotiation), 'system');
+    this._dwst.ui.terminal.mlog([`Connecting to ${this._dwst.model.connection.url}`].concat(negotiation), 'system');
   }
 
   run(paramString) {

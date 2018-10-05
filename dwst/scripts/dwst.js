@@ -18,11 +18,11 @@ import History from './models/history.js';
 import Plugins from './models/plugins.js';
 import Dwstgg from './dwstgg/dwstgg.js';
 
+import Ui from './ui/ui.js';
+
 import LinkHandler from './controllers/links.js';
 import PromptHandler from './controllers/prompt.js';
 import SocketHandler from './controllers/socket.js';
-
-import Ui from './ui/ui.js';
 
 import Binary from './plugins/binary.js';
 import Bins from './plugins/bins.js';
@@ -40,28 +40,39 @@ import Spam from './plugins/spam.js';
 import Splash from './plugins/splash.js';
 import Texts from './plugins/texts.js';
 
-const dwst = {
-  connection: null, // FIXME connection model
-  bins: new Map(),  // FIXME bin model
-  texts: new Map(), // FIXME text model
-  intervalId: null, // FIXME interval model
-  spam: null,       // FIXME spam model?
-  model: {
-    config,
-    history: null,
-  },
-  ui: null,
-  controller: null,
+function loadHistory() {
+  const HISTORY_KEY = 'history';
+  const response = localStorage.getItem(HISTORY_KEY);
+  const save = function (history) {
+    const saveState = JSON.stringify(history);
+    localStorage.setItem(HISTORY_KEY, saveState);
+  };
+  let history = [];
+  if (response !== null) {
+    history = JSON.parse(response);
+  }
+  return new History(history, {save});
+}
+
+const dwst = Object.seal({
+  model: {},
+  controller: {},
   plugins: null,
-};
+  ui: null,
+});
 
-dwst.controller = {
-  link: new LinkHandler(dwst),
-  prompt: new PromptHandler(dwst),
-  socket: new SocketHandler(dwst),
-};
+dwst.model.config = config;
+dwst.model.history = loadHistory();
+dwst.model.dwstgg = new Dwstgg(dwst);
+dwst.model.connection = null; // FIXME connection model
+dwst.model.bins = new Map();  // FIXME bin model
+dwst.model.texts = new Map(); // FIXME text model
+dwst.model.intervalId = null; // FIXME interval model
+dwst.model.spam = null;       // FIXME spam model?
 
-dwst.dwstgg = new Dwstgg(dwst);
+dwst.controller.link = new LinkHandler(dwst);
+dwst.controller.prompt = new PromptHandler(dwst);
+dwst.controller.socket = new SocketHandler(dwst);
 
 dwst.plugins = new Plugins(dwst, [
   Binary,
@@ -81,35 +92,17 @@ dwst.plugins = new Plugins(dwst, [
   Texts,
 ]);
 
-function loadSaves() {
-  const HISTORY_KEY = 'history';
-  const response = localStorage.getItem(HISTORY_KEY);
-  const save = function (history) {
-    const saveState = JSON.stringify(history);
-    localStorage.setItem(HISTORY_KEY, saveState);
-  };
-  let history = [];
-  if (response !== null) {
-    history = JSON.parse(response);
-  }
-  dwst.model.history = new History(history, {save});
-}
-
-function init() {
-  loadSaves();
+document.addEventListener('DOMContentLoaded', () => {
   dwst.ui = new Ui(document, dwst);
   dwst.ui.init();
-}
+});
 
-function onLoad() {
+window.addEventListener('load', () => {
   dwst.ui.onLoad();
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service_worker.js');
   }
-}
+});
 
-document.addEventListener('DOMContentLoaded', init);
-window.addEventListener('load', onLoad);
-
-// plugin interface developer access for live debugging
+// for live debugging
 window._dwst = dwst;

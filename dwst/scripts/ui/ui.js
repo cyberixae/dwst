@@ -42,7 +42,8 @@ export default class Ui {
 
   globalKeyPress(event) {
     if (event.key === 'Escape') {
-      if (this._dwst.connection !== null && (this._dwst.connection.isOpen() || this._dwst.connection.isConnecting())) {
+      const connection = this._dwst.model.connection;
+      if (connection !== null && (connection.isOpen() || connection.isConnecting())) {
         this._dwst.controller.prompt.loud('/disconnect');
       } else {
         this.prompt.offerConnect();

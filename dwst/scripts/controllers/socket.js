@@ -63,7 +63,7 @@ export default class SocketHandler {
       return [`Session length: ${sessionLength}ms`];
     })();
     this._dwst.ui.terminal.mlog(['Connection closed.', `Close status: ${code}`].concat(reason).concat(sessionLengthString), 'system');
-    this._dwst.connection = null;
+    this._dwst.model.connection = null;
     this._dwst.ui.menuButton.connected(false);
   }
 

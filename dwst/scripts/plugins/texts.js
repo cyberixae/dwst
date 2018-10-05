@@ -42,7 +42,7 @@ export default class Texts {
 
   _run(variable = null) {
     if (variable !== null) {
-      const text = this._dwst.texts.get(variable);
+      const text = this._dwst.model.texts.get(variable);
       if (typeof text  !== 'undefined') {
         this._dwst.ui.terminal.log(text, 'system');
         return;
@@ -57,7 +57,7 @@ export default class Texts {
       ];
       this._dwst.ui.terminal.mlog([`Text "${variable}" does not exist.`, listTip], 'error');
     }
-    const listing = [...this._dwst.texts.entries()].map(([name, text]) => {
+    const listing = [...this._dwst.model.texts.entries()].map(([name, text]) => {
       return `"${name}": <${text.length}B of text data>`;
     });
     const strs = ['Loaded texts:'].concat(listing);

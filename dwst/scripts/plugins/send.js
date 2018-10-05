@@ -83,7 +83,7 @@ export default class Send {
       if (params.length === 1) {
         variable = params[0];
       }
-      return this._dwst.texts.get(variable);
+      return this._dwst.model.texts.get(variable);
     }
     if (instr === 'time') {
       return String(Math.round(new Date().getTime() / 1000));
@@ -149,7 +149,8 @@ export default class Send {
     }
     const msg = processed.join('');
 
-    if (this._dwst.connection === null || this._dwst.connection.isClosing() || this._dwst.connection.isClosed()) {
+    const connection = this._dwst.model.connection;
+    if (connection === null || connection.isClosing() || connection.isClosed()) {
       const connectTip = [
         'Use ',
         {
@@ -163,7 +164,7 @@ export default class Send {
       return;
     }
     this._dwst.ui.terminal.log(msg, 'sent');
-    this._dwst.connection.send(msg);
+    this._dwst.model.connection.send(msg);
   }
 }
 

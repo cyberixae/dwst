@@ -45,10 +45,10 @@ export default class Interval {
 
   _run(intervalStr = null, ...commandParts) {
     if (intervalStr === null) {
-      if (this._dwst.intervalId === null) {
+      if (this._dwst.model.intervalId === null) {
         this._dwst.ui.terminal.log('no interval to clear', 'error');
       } else {
-        clearInterval(this._dwst.intervalId);
+        clearInterval(this._dwst.model.intervalId);
         this._dwst.ui.terminal.log('interval cleared', 'system');
       }
       return;
@@ -88,8 +88,8 @@ export default class Interval {
         }
         return payload;
       })();
-      if (this._dwst.connection === null || this._dwst.connection.isOpen() === false) {
-        if (this._dwst.intervalId !== null) {
+      if (this._dwst.model.connection === null || this._dwst.model.connection.isOpen() === false) {
+        if (this._dwst.model.intervalId !== null) {
           this._dwst.ui.terminal.log('interval failed, no connection', 'error');
           this._dwst.controller.prompt.run('interval');
         }
@@ -98,11 +98,11 @@ export default class Interval {
       this._dwst.controller.prompt.run([command, message].join(' '));
       count += 1;
     };
-    if (this._dwst.intervalId !== null) {
+    if (this._dwst.model.intervalId !== null) {
       this._dwst.ui.terminal.log('clearing old interval', 'system');
-      clearInterval(this._dwst.intervalId);
+      clearInterval(this._dwst.model.intervalId);
     }
-    this._dwst.intervalId = setInterval(spammer, interval);
+    this._dwst.model.intervalId = setInterval(spammer, interval);
     this._dwst.ui.terminal.log('interval set', 'system');
   }
 

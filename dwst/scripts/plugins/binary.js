@@ -131,7 +131,7 @@ export default class Binary {
       if (params.length === 1) {
         variable = params[0];
       }
-      let buffer = this._dwst.bins.get(variable);
+      let buffer = this._dwst.model.bins.get(variable);
       if (typeof buffer === 'undefined') {
         buffer = [];
       }
@@ -142,7 +142,7 @@ export default class Binary {
       if (params.length === 1) {
         variable = params[0];
       }
-      const text = this._dwst.texts.get(variable);
+      const text = this._dwst.model.texts.get(variable);
       let bytes;
       if (typeof text === 'undefined') {
         bytes = [];
@@ -211,7 +211,9 @@ export default class Binary {
     const out = joinBuffers(processed);
 
     const msg = `<${out.byteLength}B of data> `;
-    if (this._dwst.connection === null || this._dwst.connection.isClosing() || this._dwst.connection.isClosed()) {
+
+    const connection = this._dwst.model.connection;
+    if (connection === null || connection.isClosing() || connection.isClosed()) {
       const connectTip = [
         'Use ',
         {
@@ -225,7 +227,7 @@ export default class Binary {
       return;
     }
     this._dwst.ui.terminal.blog(out, 'sent');
-    this._dwst.connection.send(out);
+    this._dwst.model.connection.send(out);
   }
 }
 
