@@ -41,10 +41,11 @@ import Splash from './plugins/splash.js';
 import Texts from './plugins/texts.js';
 
 const pluginInterface = {
-  connection: null,
-  bins: new Map(),
-  texts: new Map(),
-  intervalId: null,
+  connection: null, // FIXME connection model
+  bins: new Map(),  // FIXME bin model
+  texts: new Map(), // FIXME text model
+  intervalId: null, // FIXME interval model
+  spam: null,       // FIXME spam model?
   model: {
     config,
     history: null,
