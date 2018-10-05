@@ -76,7 +76,7 @@ export default class Prompt {
     if (this._element.value === '') {
       const connects = this._dwst.models.history.getConnectCommands(1);
       if (connects.length < 1) {
-        this._element.value = `/connect ${this._dwst.ECHO_SERVER_URL}`;
+        this._element.value = `/connect ${this._dwst.models.config.echoServer}`;
       } else {
         this._element.value = connects[0];
       }

@@ -225,7 +225,7 @@ export default class Splash {
       [
         {
           type: 'h1',
-          text: `Dark WebSocket Terminal ${this._dwst.VERSION}`,
+          text: `Dark WebSocket Terminal ${this._dwst.models.config.appVersion}`,
         },
       ],
     ];
@@ -234,7 +234,7 @@ export default class Splash {
         '1. Create a test connection by typing ',
         {
           type: 'command',
-          text: `/connect ${this._dwst.ECHO_SERVER_URL}`,
+          text: `/connect ${this._dwst.models.config.echoServer}`,
         },
       ],
       [

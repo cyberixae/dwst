@@ -13,8 +13,7 @@
 
 */
 
-import config from './config.js';
-
+import config from './models/config.js';
 import History from './models/history.js';
 import Dwstgg from './dwstgg/dwstgg.js';
 
@@ -124,20 +123,17 @@ const controller = {
 };
 
 const pluginInterface = {
-
-  VERSION: config.appVersion,
-  ECHO_SERVER_URL: config.echoServer,
-
-  controller,
   connection: null,
   commands: null,
   bins: new Map(),
   texts: new Map(),
   intervalId: null,
   models: {
+    config,
     history: null,
-
   },
+  ui,
+  controller,
 };
 
 pluginInterface.dwstgg = new Dwstgg(pluginInterface);
