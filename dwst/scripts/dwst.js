@@ -15,6 +15,7 @@
 
 import config from './models/config.js';
 import History from './models/history.js';
+import Plugins from './models/plugins.js';
 import Dwstgg from './dwstgg/dwstgg.js';
 
 import Ui from './ui/ui.js';
@@ -124,7 +125,6 @@ const controller = {
 
 const pluginInterface = {
   connection: null,
-  commands: null,
   bins: new Map(),
   texts: new Map(),
   intervalId: null,
@@ -132,14 +132,14 @@ const pluginInterface = {
     config,
     history: null,
   },
-  ui,
+  ui: null,
   controller,
+  plugins: null,
 };
 
 pluginInterface.dwstgg = new Dwstgg(pluginInterface);
 
-
-const plugins = [
+pluginInterface.plugins = new Plugins(pluginInterface, [
   Binary,
   Bins,
   Clear,
@@ -155,21 +155,15 @@ const plugins = [
   Spam,
   Splash,
   Texts,
-];
-pluginInterface.commands = new Map();
-for (const Constructor of plugins) {
-  const plugin = new Constructor(pluginInterface);
-  for (const command of plugin.commands()) {
-    pluginInterface.commands.set(command, plugin);
-  }
-}
+]);
+
 
 function run(command) {
   const [pluginName, ...params] = command.split(' ');
   const paramString = params.join(' ');
 
-  const plugin = pluginInterface.commands.get(pluginName);
-  if (typeof plugin === 'undefined') {
+  const plugin = pluginInterface.plugins.getPlugin(pluginName);
+  if (plugin === null) {
     const errorMessage = `invalid command: ${pluginName}`;
     const helpTip = [
       'type ',
