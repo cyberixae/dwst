@@ -73,7 +73,7 @@ export default class SocketHandler {
     } else {
       const fr = new FileReader();
       fr.addEventListener('load', evt => {
-        const buffer = e.target.result;
+        const buffer = evt.target.result;
         this._dwst.ui.terminal.blog(buffer, 'received');
       });
       fr.readAsArrayBuffer(msg);
