@@ -46,7 +46,7 @@ const controller = {
   },
 
   onCommandLinkClick: command => {
-    pluginInterface.models.history.select(command);
+    pluginInterface.model.history.select(command);
     loud(command);
   },
 
@@ -128,7 +128,7 @@ const pluginInterface = {
   bins: new Map(),
   texts: new Map(),
   intervalId: null,
-  models: {
+  model: {
     config,
     history: null,
   },
@@ -206,7 +206,7 @@ function loadSaves() {
   if (response !== null) {
     history = JSON.parse(response);
   }
-  pluginInterface.models.history = new History(history, {save});
+  pluginInterface.model.history = new History(history, {save});
 }
 
 function init() {

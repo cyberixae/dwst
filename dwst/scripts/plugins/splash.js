@@ -148,8 +148,8 @@ export default class Splash {
     }
 
     const CONNECTION_LIST_CAP = 3;
-    const historySummary = this._dwst.models.history.getSummary();
-    const maybeTooManyConnectCommands =  this._dwst.models.history.getConnectCommands(CONNECTION_LIST_CAP + 1);
+    const historySummary = this._dwst.model.history.getSummary();
+    const maybeTooManyConnectCommands =  this._dwst.model.history.getConnectCommands(CONNECTION_LIST_CAP + 1);
     const connectCommands = maybeTooManyConnectCommands.slice(0, CONNECTION_LIST_CAP);
     const connectionsLines = connectCommands.map(command => {
       return {
@@ -225,7 +225,7 @@ export default class Splash {
       [
         {
           type: 'h1',
-          text: `Dark WebSocket Terminal ${this._dwst.models.config.appVersion}`,
+          text: `Dark WebSocket Terminal ${this._dwst.model.config.appVersion}`,
         },
       ],
     ];
@@ -234,7 +234,7 @@ export default class Splash {
         '1. Create a test connection by typing ',
         {
           type: 'command',
-          text: `/connect ${this._dwst.models.config.echoServer}`,
+          text: `/connect ${this._dwst.model.config.echoServer}`,
         },
       ],
       [
