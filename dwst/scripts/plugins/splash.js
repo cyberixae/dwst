@@ -148,8 +148,8 @@ export default class Splash {
     }
 
     const CONNECTION_LIST_CAP = 3;
-    const historySummary = this._dwst.historyManager.getSummary();
-    const maybeTooManyConnectCommands =  this._dwst.historyManager.getConnectCommands(CONNECTION_LIST_CAP + 1);
+    const historySummary = this._dwst.models.history.getSummary();
+    const maybeTooManyConnectCommands =  this._dwst.models.history.getConnectCommands(CONNECTION_LIST_CAP + 1);
     const connectCommands = maybeTooManyConnectCommands.slice(0, CONNECTION_LIST_CAP);
     const connectionsLines = connectCommands.map(command => {
       return {

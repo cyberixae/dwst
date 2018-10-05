@@ -15,7 +15,7 @@
 
 import config from './config.js';
 
-import HistoryManager from './history_manager.js';
+import History from './models/history.js';
 import Dwstgg from './dwstgg/dwstgg.js';
 
 import Ui from './ui/ui.js';
@@ -47,7 +47,7 @@ const controller = {
   },
 
   onCommandLinkClick: command => {
-    pluginInterface.historyManager.select(command);
+    pluginInterface.models.history.select(command);
     loud(command);
   },
 
@@ -129,13 +129,15 @@ const pluginInterface = {
   ECHO_SERVER_URL: config.echoServer,
 
   controller,
-  historyManager: null,
   connection: null,
   commands: null,
   bins: new Map(),
   texts: new Map(),
   intervalId: null,
+  models: {
+    history: null,
 
+  },
 };
 
 pluginInterface.dwstgg = new Dwstgg(pluginInterface);
@@ -208,7 +210,7 @@ function loadSaves() {
   if (response !== null) {
     history = JSON.parse(response);
   }
-  pluginInterface.historyManager = new HistoryManager(history, {save});
+  pluginInterface.models.history = new History(history, {save});
 }
 
 function init() {

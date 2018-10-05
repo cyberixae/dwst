@@ -39,8 +39,8 @@ export default class Forget {
   }
 
   _removeHistory() {
-    this._dwst.historyManager.forget();
-    const historyLine = this._dwst.historyManager.getSummary().concat(['.']);
+    this._dwst.models.history.forget();
+    const historyLine = this._dwst.models.history.getSummary().concat(['.']);
     this._dwst.ui.terminal.mlog(['Successfully forgot stored history!', historyLine], 'system');
   }
 
@@ -49,7 +49,7 @@ export default class Forget {
       this._removeHistory();
       this._dwst.ui.terminal.log("You may wish to use your browser's cleaning features to remove tracking cookies and other remaining traces.", 'warning');
     } else {
-      const historyLine = this._dwst.historyManager.getSummary().concat(['.']);
+      const historyLine = this._dwst.models.history.getSummary().concat(['.']);
       this._dwst.ui.terminal.mlog([`Invalid argument: ${target}`, historyLine], 'error');
     }
   }
