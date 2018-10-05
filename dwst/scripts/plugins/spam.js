@@ -83,7 +83,7 @@ export default class Spam {
         this._dwst.ui.terminal.log('spam failed, no connection', 'error');
         return;
       }
-      this._dwst.controller.run([command, message].join(' '));
+      this._dwst.controller.prompt.run([command, message].join(' '));
       const nextspam = () => {
         spam(limit, i + 1);
       };

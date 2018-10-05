@@ -100,7 +100,7 @@ export default class Connect {
         ],
       ], 'warning');
     }
-    this._dwst.connection = new Connection(url, protocols, this._dwst.controller);
+    this._dwst.connection = new Connection(url, protocols, this._dwst.controller.socket);
     const protoFormatted = protocols.join(', ');
     const negotiation = (() => {
       if (protocols.length < 1) {

@@ -52,12 +52,12 @@ export default class Prompt {
       return;
     }
     if (raw[0] === '/') {
-      this._dwst.controller.loud(raw);
+      this._dwst.controller.prompt.loud(raw);
       return;
     }
     const text = escapeForParticles(raw);
     const command = `/send ${text}`;
-    this._dwst.controller.loud(command);
+    this._dwst.controller.prompt.loud(command);
   }
 
   _keyHandler(event) {

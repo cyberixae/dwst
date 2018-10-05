@@ -18,6 +18,10 @@ import History from './models/history.js';
 import Plugins from './models/plugins.js';
 import Dwstgg from './dwstgg/dwstgg.js';
 
+import LinkHandler from './controllers/links.js';
+import PromptHandler from './controllers/prompt.js';
+import SocketHandler from './controllers/socket.js';
+
 import Ui from './ui/ui.js';
 
 import Binary from './plugins/binary.js';
@@ -36,93 +40,6 @@ import Spam from './plugins/spam.js';
 import Splash from './plugins/splash.js';
 import Texts from './plugins/texts.js';
 
-const controller = {
-
-  loud,
-  silent,
-  run,
-
-  onHelpLinkClick: command => {
-    loud(command);
-  },
-
-  onCommandLinkClick: command => {
-    pluginInterface.model.history.select(command);
-    loud(command);
-  },
-
-  onConnectionOpen: protocol => {
-    const selected = (() => {
-      if (protocol.length < 1) {
-        return [];
-      }
-      return [`Selected protocol: ${protocol}`];
-    })();
-    pluginInterface.ui.terminal.mlog(['Connection established.'].concat(selected), 'system');
-    pluginInterface.ui.menuButton.connected(true);
-  },
-
-  onConnectionClose: (e, sessionLength) => {
-    const meanings = {
-      1000: 'Normal Closure',
-      1001: 'Going Away',
-      1002: 'Protocol error',
-      1003: 'Unsupported Data',
-      1005: 'No Status Rcvd',
-      1006: 'Abnormal Closure',
-      1007: 'Invalid frame payload data',
-      1008: 'Policy Violation',
-      1009: 'Message Too Big',
-      1010: 'Mandatory Ext.',
-      1011: 'Internal Server Error',
-      1015: 'TLS handshake',
-    };
-    const code = (() => {
-      if (meanings.hasOwnProperty(e.code)) {
-        return `${e.code} (${meanings[e.code]})`;
-      }
-      return `${e.code}`;
-    })();
-    const reason = (() => {
-      if (e.reason.length < 1) {
-        return [];
-      }
-      return [`Close reason: ${e.reason}`];
-    })();
-    const sessionLengthString = (() => {
-      if (sessionLength === null) {
-        return [];
-      }
-      return [`Session length: ${sessionLength}ms`];
-    })();
-    pluginInterface.ui.terminal.mlog(['Connection closed.', `Close status: ${code}`].concat(reason).concat(sessionLengthString), 'system');
-    pluginInterface.connection = null;
-    pluginInterface.ui.menuButton.connected(false);
-  },
-
-  onMessage: msg => {
-    if (typeof msg === 'string') {
-      pluginInterface.ui.terminal.log(msg, 'received');
-    } else {
-      const fr = new FileReader();
-      fr.onload = function (e) {
-        const buffer = e.target.result;
-        pluginInterface.ui.terminal.blog(buffer, 'received');
-      };
-      fr.readAsArrayBuffer(msg);
-    }
-  },
-
-  onError: () => {
-    pluginInterface.ui.terminal.log('WebSocket error.', 'error');
-  },
-
-  onSendWhileConnecting: verb => {
-    pluginInterface.ui.terminal.log(`Attempting to send data while ${verb}`, 'warning');
-  },
-
-};
-
 const pluginInterface = {
   connection: null,
   bins: new Map(),
@@ -133,8 +50,14 @@ const pluginInterface = {
     history: null,
   },
   ui: null,
-  controller,
+  controller: null,
   plugins: null,
+};
+
+pluginInterface.controller = {
+  link: new LinkHandler(pluginInterface),
+  prompt: new PromptHandler(pluginInterface),
+  socket: new SocketHandler(pluginInterface),
 };
 
 pluginInterface.dwstgg = new Dwstgg(pluginInterface);
@@ -156,38 +79,6 @@ pluginInterface.plugins = new Plugins(pluginInterface, [
   Splash,
   Texts,
 ]);
-
-
-function run(command) {
-  const [pluginName, ...params] = command.split(' ');
-  const paramString = params.join(' ');
-
-  const plugin = pluginInterface.plugins.getPlugin(pluginName);
-  if (plugin === null) {
-    const errorMessage = `invalid command: ${pluginName}`;
-    const helpTip = [
-      'type ',
-      {
-        type: 'command',
-        text: '/help',
-      },
-      ' to list available commands',
-    ];
-    pluginInterface.ui.terminal.mlog([errorMessage, helpTip], 'error');
-    return;
-  }
-  plugin.run(paramString);
-}
-
-function silent(line) {
-  const noslash = line.substring(1);
-  run(noslash);
-}
-
-function loud(line) {
-  pluginInterface.ui.terminal.log(line, 'command');
-  silent(line);
-}
 
 function loadSaves() {
   const HISTORY_KEY = 'history';

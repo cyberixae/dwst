@@ -43,7 +43,7 @@ export default class Ui {
   globalKeyPress(event) {
     if (event.key === 'Escape') {
       if (this._dwst.connection !== null && (this._dwst.connection.isOpen() || this._dwst.connection.isConnecting())) {
-        this._dwst.controller.loud('/disconnect');
+        this._dwst.controller.prompt.loud('/disconnect');
       } else {
         this.prompt.offerConnect();
       }
@@ -89,7 +89,7 @@ export default class Ui {
     this.menuButton.init();
     this.autoScrollButton.init();
     this.scrollNotification.init();
-    this._dwst.controller.silent('/splash');
+    this._dwst.controller.prompt.silent('/splash');
     this.prompt.focus();
     window.addEventListener('resize', () => this._throttledUpdateGfxPositions());
   }

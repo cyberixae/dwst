@@ -91,11 +91,11 @@ export default class Interval {
       if (this._dwst.connection === null || this._dwst.connection.isOpen() === false) {
         if (this._dwst.intervalId !== null) {
           this._dwst.ui.terminal.log('interval failed, no connection', 'error');
-          this._dwst.controller.run('interval');
+          this._dwst.controller.prompt.run('interval');
         }
         return;
       }
-      this._dwst.controller.run([command, message].join(' '));
+      this._dwst.controller.prompt.run([command, message].join(' '));
       count += 1;
     };
     if (this._dwst.intervalId !== null) {
