@@ -55,16 +55,7 @@ export default class Binary {
     return [
       '/binary Hello world!',
       '/binary multiline\\r\\nmessage',
-      '/binary ${randomBytes(16)}',
-      '/binary ${randomChars(16)}',
-      '/binary ${text()}',
-      '/binary ${bin()}',
       '/binary ["JSON","is","cool"]',
-      '/binary ${byteRange(0,0xff)}',
-      '/binary ${charRange(0,0xff)}',
-      '/binary ${time()}',
-      '/binary ${hex(1234567890abcdef)}',
-      '/binary ${hex(52)}${random(1)}lol',
       '/b Available now with ~71.43% less typing!',
     ];
   }

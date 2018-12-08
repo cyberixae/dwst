@@ -33,15 +33,7 @@ export default class Send {
     return [
       '/send Hello world!',
       '/send multiline\\r\\nmessage',
-      '/send rpc(${randomChars(5)})',
-      '/send ${text()}',
-      '/send ${bin()}',
       '/send ["JSON","is","cool"]',
-      '/send ${time()}s since epoch',
-      '/send From a to z: ${charRange(97,122)}',
-      '/send From a to z: ${byteRange(97,122)}',
-      '/send rpc(${randomBytes(5)})',
-      '/send ${hex(1234567890abcdef)}',
       '/s Available now with 60% less typing!',
     ];
   }
