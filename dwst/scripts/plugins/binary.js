@@ -12,14 +12,6 @@
 
 */
 
-function byteValue(x) {
-  const code = x.charCodeAt(0);
-  if (code !== (code & 0xff)) { // eslint-disable-line no-bitwise
-    return 0;
-  }
-  return code;
-}
-
 function joinBuffers(buffersToJoin) {
   let total = 0;
   for (const buffer of buffersToJoin) {
@@ -81,7 +73,7 @@ export default class Binary {
       const [instruction, ...args] = particle;
       const textOrBinary = this._process(this._dwst, instruction, args);
       if (textOrBinary.constructor === Uint8Array) {
-        return textOrBinary
+        return textOrBinary;
       }
       const binary = new TextEncoder().encode(textOrBinary);
       return binary;

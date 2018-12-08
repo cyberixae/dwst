@@ -61,7 +61,7 @@ export default class Send {
       if (typeof textOrBinary === 'string') {
         return textOrBinary;
       }
-      const text = new TextDecoder("utf-8").decode(textOrBinary, {fatal: true});
+      const text = new TextDecoder('utf-8').decode(textOrBinary, {fatal: true});
       return text;
     });
     const msg = processed.join('');

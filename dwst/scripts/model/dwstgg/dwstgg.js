@@ -154,7 +154,7 @@ export default class Dwstgg {
   }
 
   _functionHelp(section) {
-    const funcName = section.slice(0, -'()'.length)
+    const funcName = section.slice(0, -'()'.length);
     const func = this._dwst.functions.getFunction(funcName);
     if (func === null) {
       throw new UnknownInstruction(funcName);
