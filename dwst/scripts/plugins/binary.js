@@ -12,20 +12,14 @@
 
 */
 
+import process from '../process.js';
+
 function byteValue(x) {
   const code = x.charCodeAt(0);
   if (code !== (code & 0xff)) { // eslint-disable-line no-bitwise
     return 0;
   }
   return code;
-}
-
-function hexpairtobyte(hp) {
-  const hex = hp.join('');
-  if (hex.length !== 2) {
-    return null;
-  }
-  return parseInt(hex, 16);
 }
 
 function joinBuffers(buffersToJoin) {
@@ -63,11 +57,14 @@ export default class Binary {
     return [
       '/binary Hello world!',
       '/binary multiline\\r\\nmessage',
-      '/binary ${random(16)}',
+      '/binary ${randomBytes(16)}',
+      '/binary ${randomChars(16)}',
       '/binary ${text()}',
       '/binary ${bin()}',
       '/binary ["JSON","is","cool"]',
-      '/binary ${range(0,0xff)}',
+      '/binary ${byteRange(0,0xff)}',
+      '/binary ${charRange(0,0xff)}',
+      '/binary ${time()}',
       '/binary ${hex(1234567890abcdef)}',
       '/binary ${hex(52)}${random(1)}lol',
       '/b Available now with ~71.43% less typing!',
@@ -78,90 +75,16 @@ export default class Binary {
     return 'send binary data';
   }
 
-  _process(instr, params) {
-    if (instr === 'default') {
-      const text = params[0];
-      const bytes = [...text].map(byteValue);
-      return new Uint8Array(bytes);
-    }
-    if (instr === 'random') {
-      const randombyte = () => {
-        const out = Math.floor(Math.random() * (0xff + 1));
-        return out;
-      };
-      let num = 16;
-      if (params.length === 1) {
-        num = this._dwst.lib.utils.parseNum(params[0]);
-      }
-      const bytes = [];
-      for (let i = 0; i < num; i++) {
-        bytes.push(randombyte());
-      }
-      return new Uint8Array(bytes);
-    }
-    if (instr === 'range') {
-      let start = 0;
-      let end = 0xff;
-      if (params.length === 1) {
-        end = this._dwst.lib.utils.parseNum(params[0]);
-      }
-      if (params.length === 2) {
-        start = this._dwst.lib.utils.parseNum(params[0]);
-        end = this._dwst.lib.utils.parseNum(params[1]);
-      }
-      const bytes = [];
-      for (let i = start; i <= end; i++) {
-        bytes.push(i);
-      }
-      return new Uint8Array(bytes);
-    }
-    if (instr === 'bin') {
-      let variable = 'default';
-      if (params.length === 1) {
-        variable = params[0];
-      }
-      let buffer = this._dwst.model.bins.get(variable);
-      if (typeof buffer === 'undefined') {
-        buffer = [];
-      }
-      return new Uint8Array(buffer);
-    }
-    if (instr === 'text') {
-      let variable = 'default';
-      if (params.length === 1) {
-        variable = params[0];
-      }
-      const text = this._dwst.model.texts.get(variable);
-      let bytes;
-      if (typeof text === 'undefined') {
-        bytes = [];
-      } else {
-        bytes = [...text].map(byteValue);
-      }
-      return new Uint8Array(bytes);
-    }
-    if (instr === 'hex') {
-      let bytes;
-      if (params.length === 1) {
-        const hex = params[0];
-        const nums = hex.split('');
-        const pairs = this._dwst.lib.utils.chunkify(nums, 2);
-        const tmp = pairs.map(hexpairtobyte);
-        bytes = tmp.filter(b => (b !== null));
-      } else {
-        bytes = [];
-      }
-      return new Uint8Array(bytes);
-    }
-    throw new this._dwst.lib.errors.UnknownInstruction(instr, 'binary');
-  }
-
-
   run(paramString) {
     const parsed = this._dwst.lib.particles.parseParticles(paramString);
     const processed = parsed.map(particle => {
       const [instruction, ...args] = particle;
-      return this._process(instruction, args);
+      const textOrBinary = process(this._dwst, instruction, args);
+      if (textOrBinary.constructor === Uint8Array) {
+        return textOrBinary
+      }
+      const binary = new TextEncoder().encode(textOrBinary);
+      return binary;
     });
     const out = joinBuffers(processed);
 
