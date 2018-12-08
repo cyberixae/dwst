@@ -30,8 +30,8 @@ export default class Time {
 
   examples() {
     return [
-      '/send ${time()}s since epoch',
-      '/binary ${time()}',
+      '/s ${time()}s since epoch',
+      '/b ${time()}',
     ];
   }
 
@@ -40,7 +40,7 @@ export default class Time {
   }
 
   info() {
-    return '';
+    return 'generate timestamp';
   }
 
   run() {

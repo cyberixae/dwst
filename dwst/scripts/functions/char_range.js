@@ -40,7 +40,7 @@ export default class CharRange {
   }
 
   info() {
-    return '';
+    return 'generate sequential characters';
   }
 
   run(params) {

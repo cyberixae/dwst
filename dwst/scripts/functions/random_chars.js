@@ -30,7 +30,8 @@ export default class RandomChars {
 
   examples() {
     return [
-      '/send ${randomChars(10)}',
+      '/s ${randomChars(10)}',
+      '/b ${randomChars(10)}',
     ];
   }
 
@@ -39,7 +40,7 @@ export default class RandomChars {
   }
 
   info() {
-    return 'random character string';
+    return 'generate random characters';
   }
 
   run(params) {

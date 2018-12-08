@@ -38,7 +38,8 @@ export default class Hex {
 
   examples() {
     return [
-      '/send ${hex(1234567890abcdef)}',
+      '/s ${hex(1234567890abcdef)}',
+      '/b ${hex(1234567890abcdef)}',
     ];
   }
 
@@ -47,7 +48,7 @@ export default class Hex {
   }
 
   info() {
-    return 'byte string';
+    return 'generate bytes from hex decimal';
   }
 
   run(params) {

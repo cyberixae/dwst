@@ -30,8 +30,8 @@ export default class Bin {
 
   examples() {
     return [
-      '/send ${bin()}',
-      '/binary ${bin()}',
+      '/s ${bin(foo)}',
+      '/b ${bin(foo)}',
     ];
   }
 
@@ -40,7 +40,7 @@ export default class Bin {
   }
 
   info() {
-    return 'binary variable';
+    return 'read binary variable';
   }
 
   run(params) {

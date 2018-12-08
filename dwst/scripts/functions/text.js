@@ -30,8 +30,8 @@ export default class Text {
 
   examples() {
     return [
-      '/send ${text()}',
-      '/binary ${text()}',
+      '/s ${text(foo)}',
+      '/b ${text(foo)}',
     ];
   }
 
@@ -40,7 +40,7 @@ export default class Text {
   }
 
   info() {
-    return '';
+    return 'read text variable';
   }
 
   run(params) {

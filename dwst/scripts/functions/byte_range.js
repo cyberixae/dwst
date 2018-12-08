@@ -30,8 +30,8 @@ export default class ByteRange {
 
   examples() {
     return [
-      '/send From a to z: ${byteRange(97,122)}',
-      '/binary ${byteRange(0,0xff)}',
+      '/s From a to z: ${byteRange(97,122)}',
+      '/b ${byteRange(0,0xff)}',
     ];
   }
 
@@ -40,7 +40,7 @@ export default class ByteRange {
   }
 
   info() {
-    return '';
+    return 'generate sequential bytes';
   }
 
   run(params) {

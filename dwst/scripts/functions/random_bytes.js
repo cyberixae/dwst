@@ -30,8 +30,8 @@ export default class RandomBytes {
 
   examples() {
     return [
-      '/send rpc(${randomBytes(5)})',
-      '/binary ${randomBytes(16)}',
+      '/s rpc(${randomBytes(5)})',
+      '/b ${randomBytes(16)}',
     ];
   }
 
@@ -40,7 +40,7 @@ export default class RandomBytes {
   }
 
   info() {
-    return '';
+    return 'generate random bytes';
   }
 
   run(params) {
