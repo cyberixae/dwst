@@ -71,7 +71,7 @@ export default class Binary {
     const parsed = this._dwst.lib.particles.parseParticles(paramString);
     const processed = parsed.map(particle => {
       const [instruction, ...args] = particle;
-      const textOrBinary = this._process(this._dwst, instruction, args);
+      const textOrBinary = this._process(instruction, args);
       if (textOrBinary.constructor === Uint8Array) {
         return textOrBinary;
       }

@@ -32,14 +32,14 @@ export default class Hex {
 
   usage() {
     return [
-      'hex(<hex bytes>)',
+      'hex(<hex string>)',
     ];
   }
 
   examples() {
     return [
-      '/s ${hex(1234567890abcdef)}',
       '/b ${hex(1234567890abcdef)}',
+      '/s ${hex(68656c6c6f)}',
     ];
   }
 

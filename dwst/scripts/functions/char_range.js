@@ -24,14 +24,15 @@ export default class CharRange {
 
   usage() {
     return [
-      'charRange(<number>)',
+      'charRange(<start>, <end>)',
     ];
   }
 
   examples() {
     return [
-      '/send From a to z: ${charRange(97,122)}',
-      '/binary ${charRange(0,0xff)}',
+      '/s From a to z: ${charRange(97,122)}',
+      '/s ${charRange(0x2600,0x2603)}',
+      '/b ${charRange(0x2600,0x2603)}',
     ];
   }
 

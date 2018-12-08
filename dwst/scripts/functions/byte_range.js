@@ -24,7 +24,7 @@ export default class ByteRange {
 
   usage() {
     return [
-      'byteRange(<number>)',
+      'byteRange(<start>, <end>)',
     ];
   }
 
