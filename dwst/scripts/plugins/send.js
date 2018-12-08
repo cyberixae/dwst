@@ -12,8 +12,6 @@
 
 */
 
-import process from '../process.js';
-
 export default class Send {
 
   constructor(dwst) {
@@ -52,11 +50,22 @@ export default class Send {
     return 'send textual data';
   }
 
+  _process(instr, params) {
+    if (instr === 'default') {
+      return params[0];
+    }
+    const func = this._dwst.functions.getFunction(instr);
+    if (func === null) {
+      throw new this._dwst.lib.errors.UnknownInstruction(instr);
+    }
+    return func.run(params);
+  }
+
   run(paramString) {
     const parsed = this._dwst.lib.particles.parseParticles(paramString);
     const processed = parsed.map(particle => {
       const [instruction, ...args] = particle;
-      const textOrBinary = process(this._dwst, instruction, args);
+      const textOrBinary = this._process(instruction, args);
       if (typeof textOrBinary === 'string') {
         return textOrBinary;
       }

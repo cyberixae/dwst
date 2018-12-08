@@ -12,8 +12,6 @@
 
 */
 
-import process from '../process.js';
-
 function byteValue(x) {
   const code = x.charCodeAt(0);
   if (code !== (code & 0xff)) { // eslint-disable-line no-bitwise
@@ -75,11 +73,22 @@ export default class Binary {
     return 'send binary data';
   }
 
+  _process(instr, params) {
+    if (instr === 'default') {
+      return params[0];
+    }
+    const func = this._dwst.functions.getFunction(instr);
+    if (func === null) {
+      throw new this._dwst.lib.errors.UnknownInstruction(instr);
+    }
+    return func.run(params);
+  }
+
   run(paramString) {
     const parsed = this._dwst.lib.particles.parseParticles(paramString);
     const processed = parsed.map(particle => {
       const [instruction, ...args] = particle;
-      const textOrBinary = process(this._dwst, instruction, args);
+      const textOrBinary = this._process(this._dwst, instruction, args);
       if (textOrBinary.constructor === Uint8Array) {
         return textOrBinary
       }
