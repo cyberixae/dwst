@@ -49,7 +49,7 @@ export default class Binary {
       '/binary ["JSON","is","cool"]',
       '/binary multiline\\r\\nmessage',
       '/binary null terminated string\\0one more\\0',
-      '/binary no-break\\xa0space',
+      '/binary tab\\x09separated\\x09strings',
       '/b Available now with ~71.43% less typing!',
     ];
   }
