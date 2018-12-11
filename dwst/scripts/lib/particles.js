@@ -51,41 +51,40 @@ function skipSpace(parsee) {
   }
 }
 
-function hexPairToByte(hp) {
-  const hex = hp.join('');
-  if (hex.length !== 2) {
-    return null;
-  }
-  return parseInt(hex, 16);
-}
-
 function readHexSequence(parsee) {
 
-  let hex;
+  const hexes = [];
   if (parsee.read('{')) {
-    hex = parsee.readWhile(hexChars);
-    if (hex.length < 1) {
+    skipSpace(parsee);
+    while (parsee.length > 0 && parsee.startsWith('}') === false) {
+      const hex = parsee.readWhile(hexChars, 2);
+      if (hex.length < 1) {
+        throw new InvalidParticles(['hex digit'], String(parsee));
+      }
+      if (hex.length < 2) {
+        throw new InvalidParticles(['hex digit'], String(parsee));
+      }
+      hexes.push(hex);
+      skipSpace(parsee);
+    }
+    if (hexes.length === 0) {
       throw new InvalidParticles(['hex digit'], String(parsee));
     }
-    if (hex.length % 2 !== 0) {
-      throw new InvalidParticles(['hex digit'], String(parsee));
-    }
-    if (parsee.read('}') === false) {
+    if (parsee.length === 0) {
       throw new InvalidParticles(['hex digit', '"}"'], String(parsee));
     }
+    parsee.read('}');
   } else {
-    hex = parsee.readWhile(hexChars, 2);
+    const hex = parsee.readWhile(hexChars, 2);
     if (hex.length < 1) {
       throw new InvalidParticles(['hex digit', '"{"'], String(parsee));
     }
-    if (hex.length % 2 !== 0) {
+    if (hex.length < 2) {
       throw new InvalidParticles(['hex digit'], String(parsee));
     }
+    hexes.push(hex)
   }
-  const nums = hex.split('');
-  const pairs = utils.chunkify(nums, 2);
-  const tmp = pairs.map(hexPairToByte);
-  const bytes = tmp.filter(b => (b !== null));
+  const bytes = hexes.map(hex => parseInt(hex, 16));
   const buffer = new Uint8Array(bytes);
   return buffer;
 }

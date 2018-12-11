@@ -24,11 +24,9 @@ const {escapeForParticles, parseParticles} = particles;
 
 describe('particles module', () => {
 
-  describe('hexPairToByte helper function', () => {
-    it('should convert hex pair to byte', () => {
-      expect(particlesRewire.__get__('hexPairToByte')(['0', '0'])).to.equal(0);
-      expect(particlesRewire.__get__('hexPairToByte')(['a', 'b'])).to.equal(171);
-      expect(particlesRewire.__get__('hexPairToByte')(['f', 'f'])).to.equal(255);
+  describe('quote helper function', () => {
+    it('should quote a string', () => {
+      expect(particlesRewire.__get__('quote')('foo')).to.equal('"foo"');
     });
   });
 
@@ -205,6 +203,16 @@ describe('particles module', () => {
         '\\x{cafe}',
       )).to.deep.equal([
         ['default', new Uint8Array([0xca, 0xfe])],
+      ]);
+      expect(parseParticles(
+        '\\x{cafe cafe}',
+      )).to.deep.equal([
+        ['default', new Uint8Array([0xca, 0xfe, 0xca, 0xfe])],
+      ]);
+      expect(parseParticles(
+        '\\x{ca fe  ca fe}',
+      )).to.deep.equal([
+        ['default', new Uint8Array([0xca, 0xfe, 0xca, 0xfe])],
       ]);
     });
     it('should parse encoded special characters', () => {
@@ -458,6 +466,14 @@ describe('particles module', () => {
         errorPosition: 'a\\x{0'.length,
       });
       expect(() => {
+        return parseParticles('a\\x{0 1');
+      }).to.throw(InvalidParticles).that.does.deep.include({
+        expression: 'a\\x{0 ',
+        expected: ['hex digit'],
+        remainder: '1',
+        errorPosition: 'a\\x{0 '.length,
+      });
+      expect(() => {
         return parseParticles('a\\x{01');
       }).to.throw(InvalidParticles).that.does.deep.include({
         expression: 'a\\x{01',
@@ -472,6 +488,14 @@ describe('particles module', () => {
         expected: ['hex digit'],
         remainder: '',
         errorPosition: 'a\\x{012'.length,
+      });
+      expect(() => {
+        return parseParticles('a\\x{012 3');
+      }).to.throw(InvalidParticles).that.does.deep.include({
+        expression: 'a\\x{012 ',
+        expected: ['hex digit'],
+        remainder: '3',
+        errorPosition: 'a\\x{012 '.length,
       });
       expect(() => {
         return parseParticles('a\\x{0123');
