@@ -33,6 +33,7 @@ function charCodeRange(start, end) {
 }
 
 const digitChars = charCodeRange('0', '9');
+const hexChars = charCodeRange('a', 'f').concat(digitChars)
 const smallChars = charCodeRange('a', 'z');
 const bigChars = charCodeRange('A', 'Z');
 const alphaChars = smallChars.concat(bigChars);
@@ -57,7 +58,17 @@ function extractEscapedChar(parsee) {
     ['n', '\x0a'],
     ['r', '\x0d'],
     ['0', '\x00'],
+    ['x', null],
   ];
+  if (parsee.read('x')) {
+    const hex = parsee.readWhile(hexChars, 2);
+    if (hex.length < 2) {
+      throw new InvalidParticles(['hex digit'], String(parsee));
+    }
+    const charCode = parseInt(hex, 16);
+    console.log(hex)
+    return String.fromCharCode(charCode);
+  }
   if (parsee.length > 0) {
     for (const [from, to] of mapping) {
       if (parsee.read(from)) {
