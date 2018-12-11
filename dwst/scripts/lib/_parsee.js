@@ -69,7 +69,7 @@ export default class Parsee {
     return chars;
   }
 
-  readWhile(allowChars, limit=Infinity) {
+  readWhile(allowChars, limit = Infinity) {
     const mismatch = indexOfNone(this._remainder, allowChars);
     const sliceIndex = Math.min(mismatch, limit);
     const chars = this._remainder.slice(0, sliceIndex);

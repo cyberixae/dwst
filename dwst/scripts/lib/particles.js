@@ -33,7 +33,7 @@ function charCodeRange(start, end) {
 }
 
 const digitChars = charCodeRange('0', '9');
-const hexChars = charCodeRange('a', 'f').concat(digitChars)
+const hexChars = charCodeRange('a', 'f').concat(digitChars);
 const smallChars = charCodeRange('a', 'z');
 const bigChars = charCodeRange('A', 'Z');
 const alphaChars = smallChars.concat(bigChars);
@@ -65,9 +65,9 @@ function extractEscapedChar(parsee) {
     if (hex.length < 2) {
       throw new InvalidParticles(['hex digit'], String(parsee));
     }
-    const charCode = parseInt(hex, 16);
-    console.log(hex)
-    return String.fromCharCode(charCode);
+    const byteValue = parseInt(hex, 16);
+    const buffer = new Uint8Array([byteValue]);
+    return buffer;
   }
   if (parsee.length > 0) {
     for (const [from, to] of mapping) {
@@ -84,21 +84,11 @@ function extractRegularChars(parsee) {
   return parsee.readUntil(specialChars);
 }
 
-function readCharBlock(parsee) {
+function readDefaultParticleContent(parsee) {
   if (parsee.read('\\')) {
     return extractEscapedChar(parsee);
   }
   return extractRegularChars(parsee);
-}
-
-function readDefaultParticleContent(parsee) {
-  const charBlocks = [];
-  while (parsee.length > 0 && parsee.startsWith('$') === false) {
-    const charBlock = readCharBlock(parsee);
-    charBlocks.push(charBlock);
-  }
-  const content = charBlocks.join('');
-  return content;
 }
 
 function skipExpressionOpen(parsee) {

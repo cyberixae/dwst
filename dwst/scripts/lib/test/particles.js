@@ -125,17 +125,21 @@ describe('particles module', () => {
       expect(parseParticles(
         '\\${foo()}',
       )).to.deep.equal([
-        ['default', '${foo()}'],
+        ['default', '$'],
+        ['default', '{foo()}'],
       ]);
       expect(parseParticles(
         'foo\\${bar()}',
       )).to.deep.equal([
-        ['default', 'foo${bar()}'],
+        ['default', 'foo'],
+        ['default', '$'],
+        ['default', '{bar()}'],
       ]);
       expect(parseParticles(
         '\\${foo()}bar',
       )).to.deep.equal([
-        ['default', '${foo()}bar'],
+        ['default', '$'],
+        ['default', '{foo()}bar'],
       ]);
     });
     it('should parse escaped backslash as a regular character', () => {
@@ -154,7 +158,8 @@ describe('particles module', () => {
       expect(parseParticles(
         'foo\\\\${bar()}',
       )).to.deep.equal([
-        ['default', 'foo\\'],
+        ['default', 'foo'],
+        ['default', '\\'],
         ['bar'],
       ]);
       expect(parseParticles(
@@ -167,7 +172,9 @@ describe('particles module', () => {
       expect(parseParticles(
         '\\\\\\${foo()}bar',
       )).to.deep.equal([
-        ['default', '\\${foo()}bar'],
+        ['default', '\\'],
+        ['default', '$'],
+        ['default', '{foo()}bar'],
       ]);
     });
     it('should parse encoded special characters', () => {
@@ -192,12 +199,12 @@ describe('particles module', () => {
       expect(parseParticles(
         '\\x00',
       )).to.deep.equal([
-        ['default', '\x00'],
+        ['default', new Uint8Array([0x00])],
       ]);
       expect(parseParticles(
         '\\xff',
       )).to.deep.equal([
-        ['default', '\xff'],
+        ['default', new Uint8Array([0xff])],
       ]);
     });
     it('should allow extra spaces inside placeholders', () => {
