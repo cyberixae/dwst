@@ -177,6 +177,25 @@ describe('particles module', () => {
         ['default', '{foo()}bar'],
       ]);
     });
+    it('should parse escaped byte' , () => {
+      expect(parseParticles(
+        '\\x00',
+      )).to.deep.equal([
+        ['default', new Uint8Array([0x00])],
+      ]);
+      expect(parseParticles(
+        '\\xff',
+      )).to.deep.equal([
+        ['default', new Uint8Array([0xff])],
+      ]);
+    });
+    it('should parse escaped multi-byte sequence' , () => {
+      expect(parseParticles(
+        '\\x{cafe}',
+      )).to.deep.equal([
+        ['default', new Uint8Array([0xca, 0xfe])],
+      ]);
+    });
     it('should parse encoded special characters', () => {
       const lineFeed = '\x0a';
       const carriageReturn = '\x0d';
@@ -195,16 +214,6 @@ describe('particles module', () => {
         '\\0',
       )).to.deep.equal([
         ['default', nullTerminator],
-      ]);
-      expect(parseParticles(
-        '\\x00',
-      )).to.deep.equal([
-        ['default', new Uint8Array([0x00])],
-      ]);
-      expect(parseParticles(
-        '\\xff',
-      )).to.deep.equal([
-        ['default', new Uint8Array([0xff])],
       ]);
     });
     it('should allow extra spaces inside placeholders', () => {
@@ -409,7 +418,7 @@ describe('particles module', () => {
         return parseParticles('a\\x');
       }).to.throw(InvalidParticles).that.does.deep.include({
         expression: 'a\\x',
-        expected: ['hex digit'],
+        expected: ['hex digit', '"{"'],
         remainder: '',
         errorPosition: 'a\\x'.length,
       });
@@ -420,6 +429,46 @@ describe('particles module', () => {
         expected: ['hex digit'],
         remainder: '',
         errorPosition: 'a\\x0'.length,
+      });
+      expect(() => {
+        return parseParticles('a\\x{');
+      }).to.throw(InvalidParticles).that.does.deep.include({
+        expression: 'a\\x{',
+        expected: ['hex digit'],
+        remainder: '',
+        errorPosition: 'a\\x{'.length,
+      });
+      expect(() => {
+        return parseParticles('a\\x{0');
+      }).to.throw(InvalidParticles).that.does.deep.include({
+        expression: 'a\\x{0',
+        expected: ['hex digit'],
+        remainder: '',
+        errorPosition: 'a\\x{0'.length,
+      });
+      expect(() => {
+        return parseParticles('a\\x{01');
+      }).to.throw(InvalidParticles).that.does.deep.include({
+        expression: 'a\\x{01',
+        expected: ['hex digit', '"}"'],
+        remainder: '',
+        errorPosition: 'a\\x{01'.length,
+      });
+      expect(() => {
+        return parseParticles('a\\x{012');
+      }).to.throw(InvalidParticles).that.does.deep.include({
+        expression: 'a\\x{012',
+        expected: ['hex digit'],
+        remainder: '',
+        errorPosition: 'a\\x{012'.length,
+      });
+      expect(() => {
+        return parseParticles('a\\x{0123');
+      }).to.throw(InvalidParticles).that.does.deep.include({
+        expression: 'a\\x{0123',
+        expected: ['hex digit', '"}"'],
+        remainder: '',
+        errorPosition: 'a\\x{0123'.length,
       });
     });
   });

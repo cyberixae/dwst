@@ -50,6 +50,7 @@ export default class Binary {
       '/binary multiline\\r\\nmessage',
       '/binary null terminated string\\0one more\\0',
       '/binary tab\\x09separated\\x09strings',
+      '/binary \\x{68656c6c6f}',
       '/b Available now with ~71.43% less typing!',
     ];
   }

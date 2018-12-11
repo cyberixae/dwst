@@ -36,6 +36,7 @@ export default class Send {
       '/send multiline\\r\\nmessage',
       '/send null terminated string\\0one more\\0',
       '/send tab\\x09separated\\x09strings',
+      '/send \\x{68656c6c6f}',
       '/s Available now with 60% less typing!',
     ];
   }

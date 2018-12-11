@@ -51,6 +51,45 @@ function skipSpace(parsee) {
   }
 }
 
+function hexpairtobyte(hp) {
+  const hex = hp.join('');
+  if (hex.length !== 2) {
+    return null;
+  }
+  return parseInt(hex, 16);
+}
+
+function readHexSequence(parsee) {
+
+  let hex;
+  if (parsee.read('{')) {
+    hex = parsee.readWhile(hexChars);
+    if (hex.length < 1) {
+      throw new InvalidParticles(['hex digit'], String(parsee));
+    }
+    if (hex.length % 2 !== 0) {
+      throw new InvalidParticles(['hex digit'], String(parsee));
+    }
+    if (parsee.read('}') === false) {
+      throw new InvalidParticles(['hex digit', '"}"'], String(parsee));
+    }
+  } else {
+    hex = parsee.readWhile(hexChars, 2);
+    if (hex.length < 1) {
+      throw new InvalidParticles(['hex digit', '"{"'], String(parsee));
+    }
+    if (hex.length % 2 !== 0) {
+      throw new InvalidParticles(['hex digit'], String(parsee));
+    }
+  }
+  const nums = hex.split('');
+  const pairs = utils.chunkify(nums, 2);
+  const tmp = pairs.map(hexpairtobyte);
+  const bytes = tmp.filter(b => (b !== null));
+  const buffer = new Uint8Array(bytes);
+  return buffer;
+}
+
 function extractEscapedChar(parsee) {
   const mapping = [
     ['\\', '\\'],
@@ -61,13 +100,7 @@ function extractEscapedChar(parsee) {
     ['x', null],
   ];
   if (parsee.read('x')) {
-    const hex = parsee.readWhile(hexChars, 2);
-    if (hex.length < 2) {
-      throw new InvalidParticles(['hex digit'], String(parsee));
-    }
-    const byteValue = parseInt(hex, 16);
-    const buffer = new Uint8Array([byteValue]);
-    return buffer;
+    return readHexSequence(parsee);
   }
   if (parsee.length > 0) {
     for (const [from, to] of mapping) {
