@@ -51,7 +51,7 @@ function skipSpace(parsee) {
   }
 }
 
-function hexpairtobyte(hp) {
+function hexPairToByte(hp) {
   const hex = hp.join('');
   if (hex.length !== 2) {
     return null;
@@ -84,7 +84,7 @@ function readHexSequence(parsee) {
   }
   const nums = hex.split('');
   const pairs = utils.chunkify(nums, 2);
-  const tmp = pairs.map(hexpairtobyte);
+  const tmp = pairs.map(hexPairToByte);
   const bytes = tmp.filter(b => (b !== null));
   const buffer = new Uint8Array(bytes);
   return buffer;

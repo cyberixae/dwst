@@ -13,14 +13,25 @@
 
 */
 
+import rewire from 'rewire';
 import {expect} from 'chai';
 import errors from '../errors.js';
 const {InvalidParticles} = errors;
 import particles from '../particles.js';
+const particlesRewire = rewire('../particles.js');
 
 const {escapeForParticles, parseParticles} = particles;
 
 describe('particles module', () => {
+
+  describe('hexPairToByte helper function', () => {
+    it('should convert hex pair to byte', () => {
+      expect(particlesRewire.__get__('hexPairToByte')(['0', '0'])).to.equal(0);
+      expect(particlesRewire.__get__('hexPairToByte')(['a', 'b'])).to.equal(171);
+      expect(particlesRewire.__get__('hexPairToByte')(['f', 'f'])).to.equal(255);
+    });
+  });
+
   describe('escapeForParticles function', () => {
     it('should escape $', () => {
       expect(escapeForParticles('$')).to.equal('\\$');
