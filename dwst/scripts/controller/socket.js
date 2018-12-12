@@ -20,11 +20,11 @@ function partToMlog(part) {
       return part.nice;
     }
     const charCode = part.chr.charCodeAt(0);
-    if (charCode < 0x80) {
-      const charHex = `0${charCode.toString(16)}`.slice(-2);
-      return `\\x${charHex}`;
+    if (charCode > 0xff) {
+      return `\\u{${charCode.toString(16)}}`;
     }
-    return `\\u{${charCode.toString(16)}}`;
+    const charHex = `0${charCode.toString(16)}`.slice(-2);
+    return `\\x${charHex}`;
   })();
   const title = `${text} - ${part.name} (${part.abbr})`;
   return {
