@@ -25,12 +25,20 @@ export default class Variables {
     }
   }
 
+  setVariable(variableName, value) {
+    this._variables.set(variableName, value);
+  }
+
   getVariable(variableName) {
     const variable = this._variables.get(variableName);
     if (typeof variable !== 'undefined') {
       return variable;
     }
     return this.getFunction(variableName);
+  }
+
+  getVariableNames() {
+    return [...this._variables.keys()];
   }
 
   getFunction(functionName) {

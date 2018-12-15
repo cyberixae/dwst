@@ -88,14 +88,7 @@ class UnknownHelpPage extends DwstError {
   }
 }
 
-class UnknownText extends DwstError {
-  constructor(variable) {
-    super();
-    this.variable = variable;
-  }
-}
-
-class UnknownBinary extends DwstError {
+class UnknownVariable extends DwstError {
   constructor(variable) {
     super();
     this.variable = variable;
@@ -114,6 +107,5 @@ export default {
   UnknownCommand,
   UnknownInstruction,
   UnknownHelpPage,
-  UnknownText,
-  UnknownBinary,
+  UnknownVariable,
 };

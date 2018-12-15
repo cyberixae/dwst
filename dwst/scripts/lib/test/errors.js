@@ -152,23 +152,12 @@ describe('errors module', () => {
       });
     });
   });
-  describe(' UnkownText error', () => {
-    const error = new errors.UnknownText('foo');
+  describe(' UnkownVariable error', () => {
+    const error = new errors.UnknownVariable('foo');
     it('should extend DwstError', () => {
       expect(error).to.be.an.instanceof(DwstError);
     });
     it('should store the requested text variable name', () => {
-      expect(error).to.include({
-        variable: 'foo',
-      });
-    });
-  });
-  describe(' UnkownBinary error', () => {
-    const error = new errors.UnknownBinary('foo');
-    it('should extend DwstError', () => {
-      expect(error).to.be.an.instanceof(DwstError);
-    });
-    it('should store the requested binary variable name', () => {
       expect(error).to.include({
         variable: 'foo',
       });

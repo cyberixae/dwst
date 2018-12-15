@@ -12,47 +12,68 @@
 
 */
 
-export default class Texts {
+export default class Vars {
 
   constructor(dwst) {
     this._dwst = dwst;
   }
 
   commands() {
-    return ['texts'];
+    return ['vars'];
   }
 
   usage() {
     return [
-      '/texts',
-      '/texts [name]',
+      '/vars',
+      '/vars [name]',
     ];
   }
 
   examples() {
     return [
-      '/texts',
-      '/texts default',
+      '/vars',
+      '/vars foo',
     ];
   }
 
   info() {
-    return 'list loaded texts';
+    return 'list variables';
   }
 
   _run(variable = null) {
     if (variable !== null) {
-      const text = this._dwst.model.texts.get(variable);
-      if (typeof text  !== 'undefined') {
-        this._dwst.ui.terminal.log(text, 'system');
+      const v = this._dwst.model.variables.getVariable(variable);
+      if (typeof v  === 'string') {
+        this._dwst.ui.terminal.log(v, 'system');
         return;
       }
-      throw new this._dwst.lib.errors.UnknownText(variable);
+      if (v instanceof ArrayBuffer) {
+        this._dwst.ui.terminal.blog(v, 'system');
+        return;
+      }
+      if (v instanceof this._dwst.lib.types.DwstFunction) {
+        this._dwst.ui.terminal.blog('<function>', 'system');
+        return;
+      }
+      throw new this._dwst.lib.errors.UnknownVariable(v);
     }
-    const listing = [...this._dwst.model.texts.entries()].map(([name, text]) => {
-      return `"${name}": <${text.length}B of text data>`;
+    const vars = this._dwst.model.variables.getVariableNames();
+    console.log(vars);
+    if (vars.length === 0) {
+      this._dwst.ui.terminal.log('No variables in memory.', 'system');
+      return;
+    }
+    const listing = [...vars].map(name => {
+      const value = this._dwst.model.variables.getVariable(name);
+      if (typeof value  === 'string') {
+        const utf8 = new TextEncoder().encode(value);
+        return `${name} <${utf8.byteLength}B of utf-8 text>`;
+      }
+      if (value instanceof ArrayBuffer) {
+        return `${name} <${value.byteLength}B of binary data>`;
+      }
     });
-    const strs = ['Loaded texts:'].concat(listing);
+    const strs = ['Loaded vars:'].concat(listing);
     this._dwst.ui.terminal.mlog(strs, 'system');
   }
 

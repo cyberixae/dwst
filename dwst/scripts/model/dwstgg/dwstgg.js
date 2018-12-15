@@ -94,7 +94,7 @@ export default class Dwstgg {
       return commandsPage(commands);
     }
     if (section === '#functions') {
-      const functions = this._dwst.variables.getFunctionNames();
+      const functions = this._dwst.model.variables.getFunctionNames();
       return functionsPage(functions);
     }
     throw new UnknownHelpPage(section);
