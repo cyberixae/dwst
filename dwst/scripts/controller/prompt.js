@@ -24,14 +24,14 @@ export default class PromptHandler {
     if (instr === 'default') {
       return params[0];
     }
-    const func = this._dwst.variables.getVariable(instr);
+    const func = this._dwst.model.variables.getVariable(instr);
     if (func === null) {
       throw new this._dwst.lib.errors.UnknownInstruction(instr);
     }
     if (func instanceof DwstFunction) {
       return func.run(params);
     }
-    throw new this._dwst.lib.errors.InvalidDataType('function');
+    throw new this._dwst.lib.errors.InvalidDataType(instr, ['FUNCTION']);
   }
 
   _getChunks(paramString) {

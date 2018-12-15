@@ -104,7 +104,7 @@ describe('errors module', () => {
     });
   });
   describe('InvalidDataType error', () => {
-    const error = new errors.InvalidDataType('randomBytes', 'function');
+    const error = new errors.InvalidDataType('randomBytes', ['FUNCTION']);
     it('should extend DwstError', () => {
       expect(error).to.be.an.instanceof(DwstError);
     });
@@ -115,7 +115,7 @@ describe('errors module', () => {
     });
     it('should store expected type', () => {
       expect(error).to.deep.include({
-        expected: 'function',
+        expected: ['FUNCTION'],
       });
     });
   });

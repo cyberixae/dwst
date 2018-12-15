@@ -12,13 +12,12 @@
 
 */
 
-import Bin from '../functions/bin.js';
 import ByteRange from '../functions/byte_range.js';
 import CharRange from '../functions/char_range.js';
 import RandomBytes from '../functions/random_bytes.js';
 import RandomChars from '../functions/random_chars.js';
-import Text from '../functions/text.js';
 import Time from '../functions/time.js';
+import Var from '../functions/var.js';
 
 import config from './config.js';
 import History from './history.js';
@@ -34,13 +33,12 @@ export default class Model {
     this.connection = null;
     this.intervalId = null;
     this.variables = new Variables(dwst, [
-      Bin,
       ByteRange,
       CharRange,
       RandomBytes,
       RandomChars,
-      Text,
       Time,
+      Var,
     ]);
   }
 

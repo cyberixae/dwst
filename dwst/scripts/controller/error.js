@@ -104,7 +104,7 @@ export default class ErrorHandler {
     if (error instanceof InvalidDataType) {
       return [
         [
-          `Variable ${error.variable} is not a ${error.expected}`,
+          `Variable ${error.variable} is not a ${commaCommaOr(error.expected)}`,
         ],
       ];
     }

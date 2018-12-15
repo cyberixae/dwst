@@ -14,7 +14,7 @@
 
 import DwstFunction from '../types/function.js';
 
-export default class Text extends DwstFunction {
+export default class Var extends DwstFunction {
 
   constructor(dwst) {
     super();
@@ -22,28 +22,28 @@ export default class Text extends DwstFunction {
   }
 
   commands() {
-    return ['text'];
+    return ['var'];
   }
 
   usage() {
     return [
-      'text(<variable name>)',
+      'var(<variable name>)',
     ];
   }
 
   examples() {
     return [
-      '/s ${text(foo)}',
-      '/b ${text(foo)}',
+      '/s ${var(foo)}',
+      '/b ${var(foo)}',
     ];
   }
 
   type() {
-    return 'STRING';
+    return 'VAR';
   }
 
   info() {
-    return 'read text variable';
+    return 'read variable';
   }
 
   run(params) {
@@ -51,6 +51,16 @@ export default class Text extends DwstFunction {
     if (params.length === 1) {
       variable = params[0];
     }
-    return this._dwst.model.texts.get(variable);
+    const value = this._dwst.model.variables.getVariable(variable);
+    if (typeof value  === 'string') {
+      return value;
+    }
+    if (value instanceof ArrayBuffer) {
+      return new Uint8Array(value);
+    }
+    if (value instanceof this._dwst.lib.types.DwstFunction) {
+      throw new this._dwst.lib.errors.InvalidDataType(variable, ['STRING', 'BINARY']);
+    }
+    throw new this._dwst.lib.errors.UnknownVariable(variable);
   }
 }

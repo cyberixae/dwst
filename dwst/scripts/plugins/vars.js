@@ -55,10 +55,9 @@ export default class Vars {
         this._dwst.ui.terminal.blog('<function>', 'system');
         return;
       }
-      throw new this._dwst.lib.errors.UnknownVariable(v);
+      throw new this._dwst.lib.errors.UnknownVariable(variable);
     }
     const vars = this._dwst.model.variables.getVariableNames();
-    console.log(vars);
     if (vars.length === 0) {
       this._dwst.ui.terminal.log('No variables in memory.', 'system');
       return;
@@ -72,6 +71,7 @@ export default class Vars {
       if (value instanceof ArrayBuffer) {
         return `${name} <${value.byteLength}B of binary data>`;
       }
+      throw new Error('unexpected variable type');
     });
     const strs = ['Loaded vars:'].concat(listing);
     this._dwst.ui.terminal.mlog(strs, 'system');
