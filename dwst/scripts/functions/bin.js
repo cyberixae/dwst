@@ -12,9 +12,12 @@
 
 */
 
-export default class Bin {
+import DwstFunction from '../types/function.js';
+
+export default class Bin extends DwstFunction {
 
   constructor(dwst) {
+    super();
     this._dwst = dwst;
   }
 

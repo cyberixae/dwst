@@ -11,14 +11,7 @@
 
 */
 
-export class DwstError extends Error {
-  constructor() {
-    super();
-    if (new.target === DwstError) {
-      throw new Error('abstract');
-    }
-  }
-}
+import DwstError from '../types/error.js';
 
 class NoConnection extends DwstError {
   constructor(msg) {
@@ -66,6 +59,14 @@ class InvalidUtf8 extends DwstError {
   }
 }
 
+class InvalidDataType extends DwstError {
+  constructor(variable, expected) {
+    super();
+    this.variable = variable;
+    this.expected = expected;
+  }
+}
+
 class UnknownCommand extends DwstError {
   constructor(command) {
     super();
@@ -109,6 +110,7 @@ export default {
   InvalidArgument,
   InvalidCombination,
   InvalidUtf8,
+  InvalidDataType,
   UnknownCommand,
   UnknownInstruction,
   UnknownHelpPage,

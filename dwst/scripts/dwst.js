@@ -18,9 +18,9 @@ import Model from './model/model.js';
 import Ui from './ui/ui.js';
 import Controller from './controller/controller.js';
 import Plugins from './model/plugins.js';
-import Functions from './model/functions.js';
+import Variables from './model/variables.js';
 
-import {DwstError} from './lib/errors.js'; // eslint-disable-line no-duplicate-imports
+import DwstError from './types/error.js';
 
 import Binary from './plugins/binary.js';
 import Bins from './plugins/bins.js';
@@ -93,7 +93,7 @@ dwst.plugins = new Plugins(dwst, [
   Texts,
 ]);
 
-dwst.functions = new Functions(dwst, [
+dwst.variables = new Variables(dwst, [
   Bin,
   ByteRange,
   CharRange,

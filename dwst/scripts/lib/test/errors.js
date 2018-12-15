@@ -15,21 +15,9 @@
 import {expect} from 'chai';
 
 import errors from '../errors.js';
-import {DwstError} from '../errors.js';  // eslint-disable-line no-duplicate-imports
+import DwstError from '../../types/error.js';
 
 describe('errors module', () => {
-  describe('DwstError super class', () => {
-    it('should be abstract', () => {
-      expect(() => {
-        new DwstError();
-      }).to.throw();
-    });
-    it('should extend Error', () => {
-      class DerivedError extends DwstError {}
-      const error = new DerivedError();
-      expect(error).to.be.an.instanceof(Error);
-    });
-  });
   describe('NoConnection error', () => {
     const error = new errors.NoConnection('hello world');
     it('should extend DwstError', () => {
@@ -112,6 +100,22 @@ describe('errors module', () => {
     it('should store buffer', () => {
       expect(error).to.deep.include({
         buffer: invalid.buffer,
+      });
+    });
+  });
+  describe('InvalidDataType error', () => {
+    const error = new errors.InvalidDataType('randomBytes', 'function');
+    it('should extend DwstError', () => {
+      expect(error).to.be.an.instanceof(DwstError);
+    });
+    it('should store variable name', () => {
+      expect(error).to.deep.include({
+        variable: 'randomBytes',
+      });
+    });
+    it('should store expected type', () => {
+      expect(error).to.deep.include({
+        expected: 'function',
       });
     });
   });

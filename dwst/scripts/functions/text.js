@@ -12,9 +12,12 @@
 
 */
 
-export default class Text {
+import DwstFunction from '../types/function.js';
+
+export default class Text extends DwstFunction {
 
   constructor(dwst) {
+    super();
     this._dwst = dwst;
   }
 
