@@ -216,12 +216,12 @@ function readParticle(parsee) {
 }
 
 function readTemplateExpression(parsee) {
-  const parsedTemplateExpression = [];
+  const particles = [];
   while (parsee.length > 0) {
     const particle = readParticle(parsee);
-    parsedTemplateExpression.push(particle);
+    particles.push(particle);
   }
-  return parsedTemplateExpression;
+  return {type: 'templateExpression', particles};
 }
 
 function parseTemplateExpression(templateExpression) {
