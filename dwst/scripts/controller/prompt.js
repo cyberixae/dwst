@@ -18,9 +18,10 @@ export default class PromptHandler {
 
   constructor(dwst) {
     this._dwst = dwst;
+    this._encoder = new TextEncoder();
   }
 
-  _process(instr, params) {
+  _reduce(instr, params) {
     if (instr === 'default') {
       return params[0];
     }
@@ -34,45 +35,47 @@ export default class PromptHandler {
     throw new this._dwst.lib.errors.InvalidDataType(instr, ['FUNCTION']);
   }
 
-  _getChunks(paramString) {
-    const parsed = this._dwst.lib.particles.parseParticles(paramString);
-    const chunks = [];
-    let current = null;
-    parsed.forEach(particle => {
-      const [instruction, ...args] = particle;
-      const output = this._process(instruction, args);
-      if (current === null) {
-        current = output;
-      } else if (typeof output !== typeof current) {
-        chunks.push(current);
-        current = output;
-      } else if (typeof current === 'string') {
-        current += output;
-      } else {
-        current = this._dwst.lib.utils.joinBuffers([current, output]);
-      }
-    });
-    if (current !== null) {
-      chunks.push(current);
-      current = null;
+  _encode(chunk) {
+    if (chunk.constructor === Uint8Array) {
+      return chunk;
     }
-    return chunks;
+    if (typeof chunk === 'string') {
+      return this._encoder.encode(chunk);
+    }
+    throw new Error('unexpected chunk type');
   }
 
-  run(command) {
-    const [pluginName, ...params] = command.split(' ');
-    const paramString = params.join(' ');
+  _getChunk(particle) {
+    const [functionName, ...args] = particle;
+    const output = this._reduce(functionName, args);
+    const binary = this._encode(output);
+    return binary;
+  }
 
+  _eval(paramString) {
+    const parsed = this._dwst.lib.particles.parseParticles(paramString);
+    const chunks = parsed.map(particle => this._getChunk(particle));
+    const result = this._dwst.lib.utils.joinBuffers(chunks).buffer;
+    return result;
+  }
+
+  _runPlugin(pluginName, paramString) {
     const plugin = this._dwst.plugins.getPlugin(pluginName);
     if (plugin === null) {
       throw new this._dwst.lib.errors.UnknownCommand(pluginName);
     }
     if (plugin.functionSupport) {
-      const paramChunks = this._getChunks(paramString);
-      plugin.run(...paramChunks);
+      const binary = this._eval(paramString);
+      plugin.run(binary);
     } else {
       plugin.run(paramString);
     }
+  }
+
+  run(command) {
+    const [pluginName, ...params] = command.split(' ');
+    const paramString = params.join(' ');
+    this._runPlugin(pluginName, paramString);
   }
 
   silent(line) {
