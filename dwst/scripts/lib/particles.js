@@ -38,8 +38,8 @@ const smallChars = charCodeRange('a', 'z');
 const bigChars = charCodeRange('A', 'Z');
 const alphaChars = smallChars.concat(bigChars);
 
-const instructionNameChars = alphaChars;
-const instructionArgChars = smallChars.concat(digitChars);
+const functionNameChars = alphaChars;
+const functionArgChars = smallChars.concat(digitChars);
 
 function quote(string) {
   return `"${string}"`;
@@ -57,7 +57,7 @@ function readTemplateExpressionByte(parsee) {
     throw new InvalidParticles(['hex digit'], String(parsee));
   }
   const value = parseInt(hex, 16);
-  return { type: 'byte', value };
+  return {type: 'byte', value};
 }
 
 function readTemplateExpressionCodePoint(parsee) {
@@ -83,7 +83,7 @@ function readTemplateExpressionCodePoint(parsee) {
     }
   }
   const value = parseInt(hex, 16);
-  return { type: 'codepoint', value };
+  return {type: 'codepoint', value};
 }
 
 function readTemplateExpressionEscape(parsee) {
@@ -105,7 +105,7 @@ function readTemplateExpressionEscape(parsee) {
   if (parsee.length > 0) {
     for (const [from, to] of mapping) {
       if (parsee.read(from)) {
-        return to;
+        return {type: 'text', value: to};
       }
     }
   }
@@ -115,7 +115,7 @@ function readTemplateExpressionEscape(parsee) {
 
 function readTemplateExpressionText(parsee) {
   const value = parsee.readUntil(specialChars);
-  return { type: 'text', value };
+  return {type: 'text', value};
 }
 
 function skipExpressionOpen(parsee) {
@@ -147,18 +147,18 @@ function skipArgListClose(parsee) {
 }
 
 function readFunctionName(parsee) {
-  const instructionName = parsee.readWhile(instructionNameChars);
-  if (instructionName.length === 0) {
-    throw new InvalidParticles(['an instruction name'], String(parsee));
+  const functionName = parsee.readWhile(functionNameChars);
+  if (functionName.length === 0) {
+    throw new InvalidParticles(['a function name'], String(parsee));
   }
   if (parsee.startsWith('}') || parsee.length === 0) {
     throw new InvalidParticles(['('].map(quote), String(parsee));
   }
-  return instructionName;
+  return functionName;
 }
 
 function readFunctionArg(parsee) {
-  const arg = parsee.readWhile(instructionArgChars);
+  const arg = parsee.readWhile(functionArgChars);
   if (arg.length === 0) {
     const expected = ['an argument'];
     throw new InvalidParticles(expected, String(parsee));
@@ -167,21 +167,21 @@ function readFunctionArg(parsee) {
 }
 
 function readFunctionArgs(parsee) {
-  const instructionArgs = [];
+  const functionArgs = [];
   if (parsee.startsWith(')')) {
-    return instructionArgs;
+    return functionArgs;
   }
-  if (instructionArgChars.some(char => parsee.startsWith(char)) === false) {
+  if (functionArgChars.some(char => parsee.startsWith(char)) === false) {
     const expected = ['an argument'].concat([')'].map(quote));
     throw new InvalidParticles(expected, String(parsee));
   }
 
   while (true) {  // eslint-disable-line
     const arg = readFunctionArg(parsee);
-    instructionArgs.push(arg);
+    functionArgs.push(arg);
     skipSpace(parsee);
     if (parsee.startsWith(')')) {
-      return instructionArgs;
+      return functionArgs;
     }
     if (parsee.read(',') === false) {
       throw new InvalidParticles([',', ')'].map(quote), String(parsee));
@@ -194,10 +194,10 @@ function readExpression(parsee) {
   const name = readFunctionName(parsee);
   skipArgListOpen(parsee);
   skipSpace(parsee);
-  const params = readFunctionArgs(parsee);
+  const args = readFunctionArgs(parsee);
   skipSpace(parsee);
   skipArgListClose(parsee);
-  return { type: 'function', name, args };
+  return {type: 'function', name, args};
 }
 
 function readParticle(parsee) {

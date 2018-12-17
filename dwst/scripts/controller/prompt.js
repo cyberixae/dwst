@@ -32,7 +32,7 @@ export default class PromptHandler {
     throw new this._dwst.lib.errors.InvalidDataType(name, ['FUNCTION']);
   }
 
-  _evalTemplateExpression(templateExpession) {
+  _evalTemplateExpression(templateExpression) {
     const parseTree = this._dwst.lib.particles.parseParticles(templateExpression);
     const chunks = parseTree.map(node => {
       if (node.type === 'text') {
@@ -40,15 +40,23 @@ export default class PromptHandler {
       }
       if (node.type === 'byte') {
         const buffer = new Uint8Array([node.value]);
+        return buffer;
       }
       if (node.type === 'codepoint') {
         const chr = String.fromCodePoint(node.value);
         return this._encoder.encode(chr);
       }
       if (node.type === 'function') {
-        return this._evalFunction(node);
+        const output = this._evalFunction(node);
+        if (output.constructor === Uint8Array) {
+          return output;
+        }
+        if (typeof output === 'string') {
+          return this._encoder.encode(output);
+        }
+        throw new Error('unexpected output type');
       }
-      throw new Error('unexpected template expression node type');
+      throw new Error(`unexpected template expression node type: ${node.type}`);
     });
     const buffer = this._dwst.lib.utils.joinBuffers(chunks).buffer;
     return buffer;

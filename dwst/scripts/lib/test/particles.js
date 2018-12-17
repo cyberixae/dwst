@@ -42,86 +42,86 @@ describe('particles module', () => {
     it('should parse a single default particle', () => {
       const result = parseParticles('particle');
       const expectedResult = [
-        ['default', 'particle'],
+        {type: 'text', value: 'particle'},
       ];
       expect(result).to.deep.equal(expectedResult);
     });
     it('should parse a single named particle without parameters', () => {
-      const result = parseParticles('${instruction()}');
+      const result = parseParticles('${function()}');
       const expectedResult = [
-        ['instruction'],
+        {type: 'function', name: 'function', args: []},
       ];
       expect(result).to.deep.equal(expectedResult);
     });
     it('should parse a single named particle with a single parameter', () => {
-      const result = parseParticles('${instruction(123)}');
+      const result = parseParticles('${function(123)}');
       const expectedResult = [
-        ['instruction', '123'],
+        {type: 'function', name: 'function', args: ['123']},
       ];
       expect(result).to.deep.equal(expectedResult);
     });
     it('should parse a single named particle with two parameters', () => {
-      const result = parseParticles('${instruction(123,abc)}');
+      const result = parseParticles('${function(123,abc)}');
       const expectedResult = [
-        ['instruction', '123', 'abc'],
+        {type: 'function', name: 'function', args: ['123', 'abc']},
       ];
       expect(result).to.deep.equal(expectedResult);
     });
-    it('should parse two instruction particles',  () => {
+    it('should parse two function particles',  () => {
       expect(parseParticles(
         '${foo()}${bar()}',
       )).to.deep.equal([
-        ['foo'],
-        ['bar'],
+        {type: 'function', name: 'foo', args: []},
+        {type: 'function', name: 'bar', args: []},
       ]);
       expect(parseParticles(
         'foo${bar()}',
       )).to.deep.equal([
-        ['default', 'foo'],
-        ['bar'],
+        {type: 'text', value: 'foo'},
+        {type: 'function', name: 'bar', args: []},
       ]);
       expect(parseParticles(
         '${foo()}bar',
       )).to.deep.equal([
-        ['foo'],
-        ['default', 'bar'],
+        {type: 'function', name: 'foo', args: []},
+        {type: 'text', value: 'bar'},
       ]);
     });
-    it('should parse three instruction particles', () => {
+    it('should parse three function particles', () => {
       expect(parseParticles(
         '${foo()}${bar()}${quux()}',
       )).to.deep.equal([
-        ['foo'],
-        ['bar'],
-        ['quux'],
+        {type: 'function', name: 'foo', args: []},
+        {type: 'function', name: 'bar', args: []},
+        {type: 'function', name: 'quux', args: []},
       ]);
       expect(parseParticles(
         'foo${bar()}${quux()}',
       )).to.deep.equal([
-        ['default', 'foo'],
-        ['bar'],
-        ['quux'],
+        {type: 'text', value: 'foo'},
+        {type: 'function', name: 'bar', args: []},
+        {type: 'function', name: 'quux', args: []},
       ]);
       expect(parseParticles(
         '${foo()}bar${quux()}',
       )).to.deep.equal([
-        ['foo'],
-        ['default', 'bar'],
-        ['quux'],
+        {type: 'function', name: 'foo', args: []},
+        {type: 'text', value: 'bar'},
+        {type: 'function', name: 'quux', args: []},
       ]);
       expect(parseParticles(
         '${foo()}${bar()}quux',
       )).to.deep.equal([
-        ['foo'],
-        ['bar'],
-        ['default', 'quux'],
+        {type: 'function', name: 'foo', args: []},
+        {type: 'function', name: 'bar', args: []},
+        {type: 'text', value: 'quux'},
       ]);
       expect(parseParticles(
         'foo${bar()}quux',
       )).to.deep.equal([
-        ['default', 'foo'],
-        ['bar'],
-        ['default', 'quux'],
+        {type: 'text', value: 'foo'},
+        {type: 'function', name: 'bar', args: []},
+        {type: 'text', value: 'quux'},
       ]);
     });
     it('should parse escaped dollar sign as a regular character', () => {
@@ -129,26 +129,26 @@ describe('particles module', () => {
       expect(parseParticles(
         '\\$',
       )).to.deep.equal([
-        ['default', '$'],
+        {type: 'text', value: '$'},
       ]);
       expect(parseParticles(
         '\\${foo()}',
       )).to.deep.equal([
-        ['default', '$'],
-        ['default', '{foo()}'],
+        {type: 'text', value: '$'},
+        {type: 'text', value: '{foo()}'},
       ]);
       expect(parseParticles(
         'foo\\${bar()}',
       )).to.deep.equal([
-        ['default', 'foo'],
-        ['default', '$'],
-        ['default', '{bar()}'],
+        {type: 'text', value: 'foo'},
+        {type: 'text', value: '$'},
+        {type: 'text', value: '{bar()}'},
       ]);
       expect(parseParticles(
         '\\${foo()}bar',
       )).to.deep.equal([
-        ['default', '$'],
-        ['default', '{foo()}bar'],
+        {type: 'text', value: '$'},
+        {type: 'text', value: '{foo()}bar'},
       ]);
     });
     it('should parse escaped backslash as a regular character', () => {
@@ -156,60 +156,60 @@ describe('particles module', () => {
       expect(parseParticles(
         '\\\\',
       )).to.deep.equal([
-        ['default', '\\'],
+        {type: 'text', value: '\\'},
       ]);
       expect(parseParticles(
         '\\\\${foo()}',
       )).to.deep.equal([
-        ['default', '\\'],
-        ['foo'],
+        {type: 'text', value: '\\'},
+        {type: 'function', name: 'foo', args: []},
       ]);
       expect(parseParticles(
         'foo\\\\${bar()}',
       )).to.deep.equal([
-        ['default', 'foo'],
-        ['default', '\\'],
-        ['bar'],
+        {type: 'text', value: 'foo'},
+        {type: 'text', value: '\\'},
+        {type: 'function', name: 'bar', args: []},
       ]);
       expect(parseParticles(
         '\\\\${foo()}bar',
       )).to.deep.equal([
-        ['default', '\\'],
-        ['foo'],
-        ['default', 'bar'],
+        {type: 'text', value: '\\'},
+        {type: 'function', name: 'foo', args: []},
+        {type: 'text', value: 'bar'},
       ]);
       expect(parseParticles(
         '\\\\\\${foo()}bar',
       )).to.deep.equal([
-        ['default', '\\'],
-        ['default', '$'],
-        ['default', '{foo()}bar'],
+        {type: 'text', value: '\\'},
+        {type: 'text', value: '$'},
+        {type: 'text', value: '{foo()}bar'},
       ]);
     });
     it('should parse escaped byte', () => {
       expect(parseParticles(
         '\\x00',
       )).to.deep.equal([
-        ['default', new Uint8Array([0x00])],
+        {type: 'byte', value: 0x00},
       ]);
       expect(parseParticles(
         '\\xff',
       )).to.deep.equal([
-        ['default', new Uint8Array([0xff])],
+        {type: 'byte', value: 0xff},
       ]);
     });
     it('should parse escaped fixed length unicode codepoint', () => {
       expect(parseParticles(
         '\\u2603',
       )).to.deep.equal([
-        ['default', '\u2603'],
+        {type: 'codepoint', value: 0x2603},
       ]);
     });
     it('should parse escaped variable length unicode codepoint', () => {
       expect(parseParticles(
         '\\u{1f375}',
       )).to.deep.equal([
-        ['default', '\u{1f375}'],
+        {type: 'codepoint', value: 0x1f375},
       ]);
     });
     it('should parse encoded special characters', () => {
@@ -219,34 +219,34 @@ describe('particles module', () => {
       expect(parseParticles(
         '\\n',
       )).to.deep.equal([
-        ['default', lineFeed],
+        {type: 'text', value: lineFeed},
       ]);
       expect(parseParticles(
         '\\r',
       )).to.deep.equal([
-        ['default', carriageReturn],
+        {type: 'text', value: carriageReturn},
       ]);
       expect(parseParticles(
         '\\0',
       )).to.deep.equal([
-        ['default', nullTerminator],
+        {type: 'text', value: nullTerminator},
       ]);
     });
     it('should allow extra spaces inside placeholders', () => {
       expect(parseParticles(
         '${foo(123 , 456)}',
       )).to.deep.equal([
-        ['foo', '123', '456'],
+        {type: 'function', name: 'foo', args: ['123', '456']},
       ]);
       expect(parseParticles(
         '${foo( 123,456 )}',
       )).to.deep.equal([
-        ['foo', '123', '456'],
+        {type: 'function', name: 'foo', args: ['123', '456']},
       ]);
       expect(parseParticles(
         '${ foo(123,456) }',
       )).to.deep.equal([
-        ['foo', '123', '456'],
+        {type: 'function', name: 'foo', args: ['123', '456']},
       ]);
     });
     it('should throw InvalidParticles for lone expression start', () => {
@@ -399,7 +399,7 @@ describe('particles module', () => {
         errorPosition: '${foo()'.length,
       });
     });
-    it('should throw InvalidParticles for terminator character in instruction name', () => {
+    it('should throw InvalidParticles for terminator character in function name', () => {
       expect(() => {
         return parseParticles('${foo}()}');
       }).to.throw(InvalidParticles).that.does.deep.include({
