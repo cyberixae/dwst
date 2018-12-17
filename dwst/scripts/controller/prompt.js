@@ -21,42 +21,37 @@ export default class PromptHandler {
     this._encoder = new TextEncoder();
   }
 
-  _reduce(instr, params) {
-    if (instr === 'default') {
-      return params[0];
-    }
-    const func = this._dwst.model.variables.getVariable(instr);
+  _evalFunction({name, args}) {
+    const func = this._dwst.model.variables.getVariable(name);
     if (func === null) {
-      throw new this._dwst.lib.errors.UnknownInstruction(instr);
+      throw new this._dwst.lib.errors.UnknownInstruction(name);
     }
     if (func instanceof DwstFunction) {
-      return func.run(params);
+      return func.run(args);
     }
-    throw new this._dwst.lib.errors.InvalidDataType(instr, ['FUNCTION']);
+    throw new this._dwst.lib.errors.InvalidDataType(name, ['FUNCTION']);
   }
 
-  _encode(chunk) {
-    if (chunk.constructor === Uint8Array) {
-      return chunk;
-    }
-    if (typeof chunk === 'string') {
-      return this._encoder.encode(chunk);
-    }
-    throw new Error('unexpected chunk type');
-  }
-
-  _getChunk(particle) {
-    const [functionName, ...args] = particle;
-    const output = this._reduce(functionName, args);
-    const binary = this._encode(output);
-    return binary;
-  }
-
-  _eval(paramString) {
-    const parsed = this._dwst.lib.particles.parseParticles(paramString);
-    const chunks = parsed.map(particle => this._getChunk(particle));
-    const result = this._dwst.lib.utils.joinBuffers(chunks).buffer;
-    return result;
+  _evalTemplateExpression(templateExpession) {
+    const parseTree = this._dwst.lib.particles.parseParticles(templateExpression);
+    const chunks = parseTree.map(node => {
+      if (node.type === 'text') {
+        return this._encoder.encode(node.value);
+      }
+      if (node.type === 'byte') {
+        const buffer = new Uint8Array([node.value]);
+      }
+      if (node.type === 'codepoint') {
+        const chr = String.fromCodePoint(node.value);
+        return this._encoder.encode(chr);
+      }
+      if (node.type === 'function') {
+        return this._evalFunction(node);
+      }
+      throw new Error('unexpected template expression node type');
+    });
+    const buffer = this._dwst.lib.utils.joinBuffers(chunks).buffer;
+    return buffer;
   }
 
   _runPlugin(pluginName, paramString) {
@@ -65,7 +60,7 @@ export default class PromptHandler {
       throw new this._dwst.lib.errors.UnknownCommand(pluginName);
     }
     if (plugin.functionSupport) {
-      const binary = this._eval(paramString);
+      const binary = this._evalTemplateExpression(paramString);
       plugin.run(binary);
     } else {
       plugin.run(paramString);

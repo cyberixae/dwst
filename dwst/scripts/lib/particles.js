@@ -51,22 +51,17 @@ function skipSpace(parsee) {
   }
 }
 
-function readHexSequence(parsee) {
-
+function readTemplateExpressionByte(parsee) {
   const hex = parsee.readWhile(hexChars, 2);
   if (hex.length < 2) {
     throw new InvalidParticles(['hex digit'], String(parsee));
   }
-  const bytes = [parseInt(hex, 16)];
-  const buffer = new Uint8Array(bytes);
-  return buffer;
-
+  const value = parseInt(hex, 16);
+  return { type: 'byte', value };
 }
 
-function readUnicodeSequence(parsee) {
-
+function readTemplateExpressionCodePoint(parsee) {
   let hex;
-
   if (parsee.read('{')) {
     hex = parsee.readWhile(hexChars, 6);
     if (hex.length < 1) {
@@ -87,12 +82,11 @@ function readUnicodeSequence(parsee) {
       throw new InvalidParticles(['hex digit'], String(parsee));
     }
   }
-  const charCode = parseInt(hex, 16);
-  const charValue = String.fromCodePoint(charCode);
-  return charValue;
+  const value = parseInt(hex, 16);
+  return { type: 'codepoint', value };
 }
 
-function extractEscapedChar(parsee) {
+function readTemplateExpressionEscape(parsee) {
   const mapping = [
     ['\\', '\\'],
     ['$', '$'],
@@ -103,10 +97,10 @@ function extractEscapedChar(parsee) {
     ['u', null],
   ];
   if (parsee.read('x')) {
-    return readHexSequence(parsee);
+    return readTemplateExpressionByte(parsee);
   }
   if (parsee.read('u')) {
-    return readUnicodeSequence(parsee);
+    return readTemplateExpressionCodePoint(parsee);
   }
   if (parsee.length > 0) {
     for (const [from, to] of mapping) {
@@ -119,15 +113,9 @@ function extractEscapedChar(parsee) {
   throw new InvalidParticles(expected.map(quote), String(parsee));
 }
 
-function extractRegularChars(parsee) {
-  return parsee.readUntil(specialChars);
-}
-
-function readDefaultParticleContent(parsee) {
-  if (parsee.read('\\')) {
-    return extractEscapedChar(parsee);
-  }
-  return extractRegularChars(parsee);
+function readTemplateExpressionText(parsee) {
+  const value = parsee.readUntil(specialChars);
+  return { type: 'text', value };
 }
 
 function skipExpressionOpen(parsee) {
@@ -158,7 +146,7 @@ function skipArgListClose(parsee) {
   }
 }
 
-function readInstructionName(parsee) {
+function readFunctionName(parsee) {
   const instructionName = parsee.readWhile(instructionNameChars);
   if (instructionName.length === 0) {
     throw new InvalidParticles(['an instruction name'], String(parsee));
@@ -169,7 +157,7 @@ function readInstructionName(parsee) {
   return instructionName;
 }
 
-function readInstructionArg(parsee) {
+function readFunctionArg(parsee) {
   const arg = parsee.readWhile(instructionArgChars);
   if (arg.length === 0) {
     const expected = ['an argument'];
@@ -178,7 +166,7 @@ function readInstructionArg(parsee) {
   return arg;
 }
 
-function readInstructionArgs(parsee) {
+function readFunctionArgs(parsee) {
   const instructionArgs = [];
   if (parsee.startsWith(')')) {
     return instructionArgs;
@@ -189,7 +177,7 @@ function readInstructionArgs(parsee) {
   }
 
   while (true) {  // eslint-disable-line
-    const arg = readInstructionArg(parsee);
+    const arg = readFunctionArg(parsee);
     instructionArgs.push(arg);
     skipSpace(parsee);
     if (parsee.startsWith(')')) {
@@ -202,37 +190,29 @@ function readInstructionArgs(parsee) {
   }
 }
 
-function parseExpression(parsee) {
-  const instructionName = readInstructionName(parsee);
+function readExpression(parsee) {
+  const name = readFunctionName(parsee);
   skipArgListOpen(parsee);
   skipSpace(parsee);
-  const instructionArgs = readInstructionArgs(parsee);
+  const params = readFunctionArgs(parsee);
   skipSpace(parsee);
   skipArgListClose(parsee);
-  const particle = [instructionName].concat(instructionArgs);
-  return particle;
-}
-
-function readInstructionParticle(parsee) {
-  skipExpressionOpen(parsee);
-  skipSpace(parsee);
-  const particle = parseExpression(parsee);
-  skipSpace(parsee);
-  skipExpressionClose(parsee);
-  return particle;
-}
-
-function readDefaultParticle(parsee) {
-  const content = readDefaultParticleContent(parsee);
-  const particle = ['default', content];
-  return particle;
+  return { type: 'function', name, args };
 }
 
 function readParticle(parsee) {
-  if (parsee.read('$')) {
-    return readInstructionParticle(parsee);
+  if (parsee.read('\\')) {
+    return readTemplateExpressionEscape(parsee);
   }
-  return readDefaultParticle(parsee);
+  if (parsee.read('$')) {
+    skipExpressionOpen(parsee);
+    skipSpace(parsee);
+    const expression = readExpression(parsee);
+    skipSpace(parsee);
+    skipExpressionClose(parsee);
+    return expression;
+  }
+  return readTemplateExpressionText(parsee);
 }
 
 function tryParseParticles(particleString) {
