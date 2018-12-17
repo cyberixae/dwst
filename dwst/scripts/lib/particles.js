@@ -17,7 +17,7 @@
 
 import Parsee from '../types/parsee.js';
 import errors from './errors.js';
-const {InvalidParticles} = errors;
+const {InvalidTemplateExpression} = errors;
 import utils from './utils.js';
 
 const specialChars = [
@@ -54,7 +54,7 @@ function skipSpace(parsee) {
 function readTemplateExpressionByte(parsee) {
   const hex = parsee.readWhile(hexChars, 2);
   if (hex.length < 2) {
-    throw new InvalidParticles(['hex digit'], String(parsee));
+    throw new InvalidTemplateExpression(['hex digit'], String(parsee));
   }
   const value = parseInt(hex, 16);
   return {type: 'byte', value};
@@ -65,21 +65,21 @@ function readTemplateExpressionCodePoint(parsee) {
   if (parsee.read('{')) {
     hex = parsee.readWhile(hexChars, 6);
     if (hex.length < 1) {
-      throw new InvalidParticles(['hex digit'], String(parsee));
+      throw new InvalidTemplateExpression(['hex digit'], String(parsee));
     }
     if (parsee.length === 0) {
-      throw new InvalidParticles(['hex digit', '"}"'], String(parsee));
+      throw new InvalidTemplateExpression(['hex digit', '"}"'], String(parsee));
     }
     if (parsee.read('}') === false) {
-      throw new InvalidParticles(['"}"'], String(parsee));
+      throw new InvalidTemplateExpression(['"}"'], String(parsee));
     }
   } else {
     hex = parsee.readWhile(hexChars, 4);
     if (hex.length < 1) {
-      throw new InvalidParticles(['hex digit', '"{"'], String(parsee));
+      throw new InvalidTemplateExpression(['hex digit', '"{"'], String(parsee));
     }
     if (hex.length < 4) {
-      throw new InvalidParticles(['hex digit'], String(parsee));
+      throw new InvalidTemplateExpression(['hex digit'], String(parsee));
     }
   }
   const value = parseInt(hex, 16);
@@ -110,7 +110,7 @@ function readTemplateExpressionEscape(parsee) {
     }
   }
   const expected = mapping.map(pair => pair[0]);
-  throw new InvalidParticles(expected.map(quote), String(parsee));
+  throw new InvalidTemplateExpression(expected.map(quote), String(parsee));
 }
 
 function readTemplateExpressionText(parsee) {
@@ -121,21 +121,21 @@ function readTemplateExpressionText(parsee) {
 function skipExpressionOpen(parsee) {
   const expressionOpen = '{';
   if (parsee.read(expressionOpen) === false) {
-    throw new InvalidParticles([expressionOpen].map(quote), String(parsee));
+    throw new InvalidTemplateExpression([expressionOpen].map(quote), String(parsee));
   }
 }
 
 function skipExpressionClose(parsee) {
   const expressionClose = '}';
   if (parsee.read(expressionClose) === false) {
-    throw new InvalidParticles([expressionClose].map(quote), String(parsee));
+    throw new InvalidTemplateExpression([expressionClose].map(quote), String(parsee));
   }
 }
 
 function skipArgListOpen(parsee) {
   const argListOpen = '(';
   if (parsee.read(argListOpen) === false) {
-    throw new InvalidParticles([argListOpen].map(quote), String(parsee));
+    throw new InvalidTemplateExpression([argListOpen].map(quote), String(parsee));
   }
 }
 
@@ -149,10 +149,10 @@ function skipArgListClose(parsee) {
 function readFunctionName(parsee) {
   const functionName = parsee.readWhile(functionNameChars);
   if (functionName.length === 0) {
-    throw new InvalidParticles(['a function name'], String(parsee));
+    throw new InvalidTemplateExpression(['a function name'], String(parsee));
   }
   if (parsee.startsWith('}') || parsee.length === 0) {
-    throw new InvalidParticles(['('].map(quote), String(parsee));
+    throw new InvalidTemplateExpression(['('].map(quote), String(parsee));
   }
   return functionName;
 }
@@ -161,7 +161,7 @@ function readFunctionArg(parsee) {
   const arg = parsee.readWhile(functionArgChars);
   if (arg.length === 0) {
     const expected = ['an argument'];
-    throw new InvalidParticles(expected, String(parsee));
+    throw new InvalidTemplateExpression(expected, String(parsee));
   }
   return arg;
 }
@@ -173,7 +173,7 @@ function readFunctionArgs(parsee) {
   }
   if (functionArgChars.some(char => parsee.startsWith(char)) === false) {
     const expected = ['an argument'].concat([')'].map(quote));
-    throw new InvalidParticles(expected, String(parsee));
+    throw new InvalidTemplateExpression(expected, String(parsee));
   }
 
   while (true) {  // eslint-disable-line
@@ -184,7 +184,7 @@ function readFunctionArgs(parsee) {
       return functionArgs;
     }
     if (parsee.read(',') === false) {
-      throw new InvalidParticles([',', ')'].map(quote), String(parsee));
+      throw new InvalidTemplateExpression([',', ')'].map(quote), String(parsee));
     }
     skipSpace(parsee);
   }
@@ -215,28 +215,28 @@ function readParticle(parsee) {
   return readTemplateExpressionText(parsee);
 }
 
-function tryParseParticles(particleString) {
-  const parsedParticles = [];
+function tryParseTemplateExpression(particleString) {
+  const parsedTemplateExpression = [];
   const parsee = new Parsee(particleString);
   while (parsee.length > 0) {
     const particle = readParticle(parsee);
-    parsedParticles.push(particle);
+    parsedTemplateExpression.push(particle);
   }
-  return parsedParticles;
+  return parsedTemplateExpression;
 }
 
-function parseParticles(particleString) {
+function parseTemplateExpression(particleString) {
   try {
-    return tryParseParticles(particleString);
+    return tryParseTemplateExpression(particleString);
   } catch (e) {
-    if (e instanceof InvalidParticles) {
+    if (e instanceof InvalidTemplateExpression) {
       e.expression = particleString;
     }
     throw e;
   }
 }
 
-function escapeForParticles(textString) {
+function escapeForTemplateExpression(textString) {
   const replmap = [
     ['$', '\\$'],
     ['\\', '\\\\'],
@@ -265,6 +265,6 @@ function escapeForParticles(textString) {
 }
 
 export default {
-  parseParticles,
-  escapeForParticles,
+  parseTemplateExpression,
+  escapeForTemplateExpression,
 };

@@ -16,11 +16,11 @@
 import rewire from 'rewire';
 import {expect} from 'chai';
 import errors from '../errors.js';
-const {InvalidParticles} = errors;
+const {InvalidTemplateExpression} = errors;
 import particles from '../particles.js';
 const particlesRewire = rewire('../particles.js');
 
-const {escapeForParticles, parseParticles} = particles;
+const {escapeForTemplateExpression, parseTemplateExpression} = particles;
 
 describe('particles module', () => {
 
@@ -30,57 +30,57 @@ describe('particles module', () => {
     });
   });
 
-  describe('escapeForParticles function', () => {
+  describe('escapeForTemplateExpression function', () => {
     it('should escape $', () => {
-      expect(escapeForParticles('$')).to.equal('\\$');
+      expect(escapeForTemplateExpression('$')).to.equal('\\$');
     });
     it('should escape \\', () => {
-      expect(escapeForParticles('\\')).to.equal('\\\\');
+      expect(escapeForTemplateExpression('\\')).to.equal('\\\\');
     });
   });
-  describe('parseParticles function', () => {
+  describe('parseTemplateExpression function', () => {
     it('should parse a single default particle', () => {
-      const result = parseParticles('particle');
+      const result = parseTemplateExpression('particle');
       const expectedResult = [
         {type: 'text', value: 'particle'},
       ];
       expect(result).to.deep.equal(expectedResult);
     });
     it('should parse a single named particle without parameters', () => {
-      const result = parseParticles('${function()}');
+      const result = parseTemplateExpression('${function()}');
       const expectedResult = [
         {type: 'function', name: 'function', args: []},
       ];
       expect(result).to.deep.equal(expectedResult);
     });
     it('should parse a single named particle with a single parameter', () => {
-      const result = parseParticles('${function(123)}');
+      const result = parseTemplateExpression('${function(123)}');
       const expectedResult = [
         {type: 'function', name: 'function', args: ['123']},
       ];
       expect(result).to.deep.equal(expectedResult);
     });
     it('should parse a single named particle with two parameters', () => {
-      const result = parseParticles('${function(123,abc)}');
+      const result = parseTemplateExpression('${function(123,abc)}');
       const expectedResult = [
         {type: 'function', name: 'function', args: ['123', 'abc']},
       ];
       expect(result).to.deep.equal(expectedResult);
     });
     it('should parse two function particles',  () => {
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '${foo()}${bar()}',
       )).to.deep.equal([
         {type: 'function', name: 'foo', args: []},
         {type: 'function', name: 'bar', args: []},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         'foo${bar()}',
       )).to.deep.equal([
         {type: 'text', value: 'foo'},
         {type: 'function', name: 'bar', args: []},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '${foo()}bar',
       )).to.deep.equal([
         {type: 'function', name: 'foo', args: []},
@@ -88,35 +88,35 @@ describe('particles module', () => {
       ]);
     });
     it('should parse three function particles', () => {
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '${foo()}${bar()}${quux()}',
       )).to.deep.equal([
         {type: 'function', name: 'foo', args: []},
         {type: 'function', name: 'bar', args: []},
         {type: 'function', name: 'quux', args: []},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         'foo${bar()}${quux()}',
       )).to.deep.equal([
         {type: 'text', value: 'foo'},
         {type: 'function', name: 'bar', args: []},
         {type: 'function', name: 'quux', args: []},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '${foo()}bar${quux()}',
       )).to.deep.equal([
         {type: 'function', name: 'foo', args: []},
         {type: 'text', value: 'bar'},
         {type: 'function', name: 'quux', args: []},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '${foo()}${bar()}quux',
       )).to.deep.equal([
         {type: 'function', name: 'foo', args: []},
         {type: 'function', name: 'bar', args: []},
         {type: 'text', value: 'quux'},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         'foo${bar()}quux',
       )).to.deep.equal([
         {type: 'text', value: 'foo'},
@@ -126,25 +126,25 @@ describe('particles module', () => {
     });
     it('should parse escaped dollar sign as a regular character', () => {
       // note that javascript eliminates every other backslash
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '\\$',
       )).to.deep.equal([
         {type: 'text', value: '$'},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '\\${foo()}',
       )).to.deep.equal([
         {type: 'text', value: '$'},
         {type: 'text', value: '{foo()}'},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         'foo\\${bar()}',
       )).to.deep.equal([
         {type: 'text', value: 'foo'},
         {type: 'text', value: '$'},
         {type: 'text', value: '{bar()}'},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '\\${foo()}bar',
       )).to.deep.equal([
         {type: 'text', value: '$'},
@@ -153,32 +153,32 @@ describe('particles module', () => {
     });
     it('should parse escaped backslash as a regular character', () => {
       // note that javascript eliminates every other backslash
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '\\\\',
       )).to.deep.equal([
         {type: 'text', value: '\\'},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '\\\\${foo()}',
       )).to.deep.equal([
         {type: 'text', value: '\\'},
         {type: 'function', name: 'foo', args: []},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         'foo\\\\${bar()}',
       )).to.deep.equal([
         {type: 'text', value: 'foo'},
         {type: 'text', value: '\\'},
         {type: 'function', name: 'bar', args: []},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '\\\\${foo()}bar',
       )).to.deep.equal([
         {type: 'text', value: '\\'},
         {type: 'function', name: 'foo', args: []},
         {type: 'text', value: 'bar'},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '\\\\\\${foo()}bar',
       )).to.deep.equal([
         {type: 'text', value: '\\'},
@@ -187,26 +187,26 @@ describe('particles module', () => {
       ]);
     });
     it('should parse escaped byte', () => {
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '\\x00',
       )).to.deep.equal([
         {type: 'byte', value: 0x00},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '\\xff',
       )).to.deep.equal([
         {type: 'byte', value: 0xff},
       ]);
     });
     it('should parse escaped fixed length unicode codepoint', () => {
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '\\u2603',
       )).to.deep.equal([
         {type: 'codepoint', value: 0x2603},
       ]);
     });
     it('should parse escaped variable length unicode codepoint', () => {
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '\\u{1f375}',
       )).to.deep.equal([
         {type: 'codepoint', value: 0x1f375},
@@ -216,289 +216,289 @@ describe('particles module', () => {
       const lineFeed = '\x0a';
       const carriageReturn = '\x0d';
       const nullTerminator = '\x00';
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '\\n',
       )).to.deep.equal([
         {type: 'text', value: lineFeed},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '\\r',
       )).to.deep.equal([
         {type: 'text', value: carriageReturn},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '\\0',
       )).to.deep.equal([
         {type: 'text', value: nullTerminator},
       ]);
     });
     it('should allow extra spaces inside placeholders', () => {
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '${foo(123 , 456)}',
       )).to.deep.equal([
         {type: 'function', name: 'foo', args: ['123', '456']},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '${foo( 123,456 )}',
       )).to.deep.equal([
         {type: 'function', name: 'foo', args: ['123', '456']},
       ]);
-      expect(parseParticles(
+      expect(parseTemplateExpression(
         '${ foo(123,456) }',
       )).to.deep.equal([
         {type: 'function', name: 'foo', args: ['123', '456']},
       ]);
     });
-    it('should throw InvalidParticles for lone expression start', () => {
+    it('should throw InvalidTemplateExpression for lone expression start', () => {
       expect(() => {
-        return parseParticles('$');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('$');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '$',
         expected: ['"{"'],
         remainder: '',
         errorPosition: '$'.length,
       });
     });
-    it('should throw InvalidParticles for space between expression start and expression open', () => {
+    it('should throw InvalidTemplateExpression for space between expression start and expression open', () => {
       expect(() => {
-        return parseParticles('$ {foo()}');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('$ {foo()}');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '$ {foo()}',
         expected: ['"{"'],
         remainder: ' {foo()}',
         errorPosition: '$'.length,
       });
     });
-    it('should throw InvalidParticles for missing expression open and close', () => {
+    it('should throw InvalidTemplateExpression for missing expression open and close', () => {
       expect(() => {
-        return parseParticles('$foo()');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('$foo()');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '$foo()',
         expected: ['"{"'],
         remainder: 'foo()',
         errorPosition: '$'.length,
       });
     });
-    it('should throw InvalidParticles for missing argument after a comma', () => {
+    it('should throw InvalidTemplateExpression for missing argument after a comma', () => {
       expect(() => {
-        return parseParticles('${foo(123,)}');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('${foo(123,)}');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '${foo(123,)}',
         expected: ['an argument'],
         remainder: ')}',
         errorPosition: '${foo(123,'.length,
       });
     });
-    it('should throw InvalidParticles for missing first argument before a comma', () => {
+    it('should throw InvalidTemplateExpression for missing first argument before a comma', () => {
       expect(() => {
-        return parseParticles('${foo(,456)}');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('${foo(,456)}');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '${foo(,456)}',
         expected: ['an argument', '")"'],
         remainder: ',456)}',
         errorPosition: '${foo('.length,
       });
     });
-    it('should throw InvalidParticles for missing comma', () => {
+    it('should throw InvalidTemplateExpression for missing comma', () => {
       expect(() => {
-        return parseParticles('${foo(123 456)}');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('${foo(123 456)}');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '${foo(123 456)}',
         expected: ['","', '")"'],
         remainder: '456)}',
         errorPosition: '${foo(123 '.length,
       });
     });
-    it('should throw InvalidParticles for no argument list', () => {
+    it('should throw InvalidTemplateExpression for no argument list', () => {
       expect(() => {
-        return parseParticles('${foo}');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('${foo}');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '${foo}',
         expected: ['"("'],
         remainder: '}',
         errorPosition: '${foo'.length,
       });
     });
-    it('should throw InvalidParticles for empty argument list missing close', () => {
+    it('should throw InvalidTemplateExpression for empty argument list missing close', () => {
       expect(() => {
-        return parseParticles('${foo(}');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('${foo(}');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '${foo(}',
         expected: ['an argument', '")"'],
         remainder: '}',
         errorPosition: '${foo('.length,
       });
     });
-    it('should throw InvalidParticles for expression terminator as argument', () => {
+    it('should throw InvalidTemplateExpression for expression terminator as argument', () => {
       expect(() => {
-        return parseParticles('${foo(})}');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('${foo(})}');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '${foo(})}',
         expected: ['an argument', '")"'],
         remainder: '})}',
         errorPosition: '${foo('.length,
       });
     });
-    it('should throw InvalidParticles for unterminated expression with populated argument list missing it\'s close', () => {
+    it('should throw InvalidTemplateExpression for unterminated expression with populated argument list missing it\'s close', () => {
       expect(() => {
-        return parseParticles('${foo(123');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('${foo(123');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '${foo(123',
         expected: ['","', '")"'],
         remainder: '',
         errorPosition: '${foo(123'.length,
       });
     });
-    it('should throw InvalidParticles for unterminated expression with populated argument list missing both argument after comma and argument list close', () => {
+    it('should throw InvalidTemplateExpression for unterminated expression with populated argument list missing both argument after comma and argument list close', () => {
       expect(() => {
-        return parseParticles('${foo(123,');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('${foo(123,');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '${foo(123,',
         expected: ['an argument'],
         remainder: '',
         errorPosition: '${foo(123,'.length,
       });
     });
-    it('should throw InvalidParticles for unterminated expression with multivalue argument list missing it\'s close', () => {
+    it('should throw InvalidTemplateExpression for unterminated expression with multivalue argument list missing it\'s close', () => {
       expect(() => {
-        return parseParticles('${foo(123,456');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('${foo(123,456');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '${foo(123,456',
         expected: ['","', '")"'],
         remainder: '',
         errorPosition: '${foo(123,456'.length,
       });
     });
-    it('should throw InvalidParticles for terminated multivalue argument list expression missing argument list close', () => {
+    it('should throw InvalidTemplateExpression for terminated multivalue argument list expression missing argument list close', () => {
       expect(() => {
-        return parseParticles('${foo(123,456}');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('${foo(123,456}');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '${foo(123,456}',
         expected: ['","', '")"'],
         remainder: '}',
         errorPosition: '${foo(123,456'.length,
       });
     });
-    it('should throw InvalidParticles for missing argument list open', () => {
+    it('should throw InvalidTemplateExpression for missing argument list open', () => {
       expect(() => {
-        return parseParticles('${foo)}');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('${foo)}');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '${foo)}',
         expected: ['"("'],
         remainder: ')}',
         errorPosition: '${foo'.length,
       });
     });
-    it('should throw InvalidParticles for unterminated expression', () => {
+    it('should throw InvalidTemplateExpression for unterminated expression', () => {
       expect(() => {
-        return parseParticles('${foo()');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('${foo()');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '${foo()',
         expected: ['"}"'],
         remainder: '',
         errorPosition: '${foo()'.length,
       });
     });
-    it('should throw InvalidParticles for terminator character in function name', () => {
+    it('should throw InvalidTemplateExpression for terminator character in function name', () => {
       expect(() => {
-        return parseParticles('${foo}()}');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('${foo}()}');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '${foo}()}',
         expected: ['"("'],
         remainder: '}()}',
         errorPosition: '${foo'.length,
       });
     });
-    it('should throw InvalidParticles for escaped nonspecial character', () => {
+    it('should throw InvalidTemplateExpression for escaped nonspecial character', () => {
       expect(() => {
-        return parseParticles('\\a');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('\\a');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: '\\a',
         expected: ['"\\"', '"$"', '"n"', '"r"', '"0"', '"x"', '"u"'],
         remainder: 'a',
         errorPosition: '\\'.length,
       });
     });
-    it('should throw InvalidParticles for escape at end of input', () => {
+    it('should throw InvalidTemplateExpression for escape at end of input', () => {
       expect(() => {
-        return parseParticles('a\\');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('a\\');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: 'a\\',
         expected: ['"\\"', '"$"', '"n"', '"r"', '"0"', '"x"', '"u"'],
         remainder: '',
         errorPosition: 'a\\'.length,
       });
     });
-    it('should throw InvalidParticles for invalid byte escape', () => {
+    it('should throw InvalidTemplateExpression for invalid byte escape', () => {
       expect(() => {
-        return parseParticles('a\\x');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('a\\x');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: 'a\\x',
         expected: ['hex digit'],
         remainder: '',
         errorPosition: 'a\\x'.length,
       });
       expect(() => {
-        return parseParticles('a\\x0');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('a\\x0');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: 'a\\x0',
         expected: ['hex digit'],
         remainder: '',
         errorPosition: 'a\\x0'.length,
       });
     });
-    it('should throw InvalidParticles for invalid unicode escape', () => {
+    it('should throw InvalidTemplateExpression for invalid unicode escape', () => {
       expect(() => {
-        return parseParticles('a\\u');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('a\\u');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: 'a\\u',
         expected: ['hex digit', '"{"'],
         remainder: '',
         errorPosition: 'a\\u'.length,
       });
       expect(() => {
-        return parseParticles('a\\u0');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('a\\u0');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: 'a\\u0',
         expected: ['hex digit'],
         remainder: '',
         errorPosition: 'a\\u0'.length,
       });
       expect(() => {
-        return parseParticles('a\\u00');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('a\\u00');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: 'a\\u00',
         expected: ['hex digit'],
         remainder: '',
         errorPosition: 'a\\u00'.length,
       });
       expect(() => {
-        return parseParticles('a\\u000');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('a\\u000');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: 'a\\u000',
         expected: ['hex digit'],
         remainder: '',
         errorPosition: 'a\\u000'.length,
       });
       expect(() => {
-        return parseParticles('a\\u{');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('a\\u{');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: 'a\\u{',
         expected: ['hex digit'],
         remainder: '',
         errorPosition: 'a\\u{'.length,
       });
       expect(() => {
-        return parseParticles('a\\u{0');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('a\\u{0');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: 'a\\u{0',
         expected: ['hex digit', '"}"'],
         remainder: '',
         errorPosition: 'a\\u{0'.length,
       });
       expect(() => {
-        return parseParticles('a\\u{1234567');
-      }).to.throw(InvalidParticles).that.does.deep.include({
+        return parseTemplateExpression('a\\u{1234567');
+      }).to.throw(InvalidTemplateExpression).that.does.deep.include({
         expression: 'a\\u{1234567',
         expected: ['"}"'],
         remainder: '7',

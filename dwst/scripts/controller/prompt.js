@@ -33,7 +33,7 @@ export default class PromptHandler {
   }
 
   _evalTemplateExpression(templateExpression) {
-    const parseTree = this._dwst.lib.particles.parseParticles(templateExpression);
+    const parseTree = this._dwst.lib.particles.parseTemplateExpression(templateExpression);
     const chunks = parseTree.map(node => {
       if (node.type === 'text') {
         return this._encoder.encode(node.value);
