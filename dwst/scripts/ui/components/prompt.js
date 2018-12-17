@@ -13,8 +13,8 @@
 
 */
 
-import particles from '../../lib/particles.js';
-const {escapeForTemplateExpression} = particles;
+import parser from '../../lib/parser.js';
+const {escapeForTemplateExpression} = parser;
 
 export default class Prompt {
 

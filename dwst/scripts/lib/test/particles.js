@@ -17,16 +17,16 @@ import rewire from 'rewire';
 import {expect} from 'chai';
 import errors from '../errors.js';
 const {InvalidTemplateExpression} = errors;
-import particles from '../particles.js';
-const particlesRewire = rewire('../particles.js');
+import parser from '../parser.js';
+const parserRewire = rewire('../parser.js');
 
-const {escapeForTemplateExpression, parseTemplateExpression} = particles;
+const {escapeForTemplateExpression, parseTemplateExpression} = parser;
 
-describe('particles module', () => {
+describe('parser module', () => {
 
   describe('quote helper function', () => {
     it('should quote a string', () => {
-      expect(particlesRewire.__get__('quote')('foo')).to.equal('"foo"');
+      expect(parserRewire.__get__('quote')('foo')).to.equal('"foo"');
     });
   });
 
@@ -67,7 +67,7 @@ describe('particles module', () => {
       ];
       expect(result).to.deep.equal(expectedResult);
     });
-    it('should parse two function particles',  () => {
+    it('should parse two embedded expressions',  () => {
       expect(parseTemplateExpression(
         '${foo()}${bar()}',
       )).to.deep.equal([
@@ -87,7 +87,7 @@ describe('particles module', () => {
         {type: 'text', value: 'bar'},
       ]);
     });
-    it('should parse three function particles', () => {
+    it('should parse three embedded expressions', () => {
       expect(parseTemplateExpression(
         '${foo()}${bar()}${quux()}',
       )).to.deep.equal([

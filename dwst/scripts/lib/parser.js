@@ -13,7 +13,7 @@
 
 */
 
-// DWST particles templating language
+// DWST template expression parser
 
 import Parsee from '../types/parsee.js';
 import errors from './errors.js';
