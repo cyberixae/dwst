@@ -215,9 +215,8 @@ function readParticle(parsee) {
   return readTemplateExpressionText(parsee);
 }
 
-function tryParseTemplateExpression(particleString) {
+function readTemplateExpression(parsee) {
   const parsedTemplateExpression = [];
-  const parsee = new Parsee(particleString);
   while (parsee.length > 0) {
     const particle = readParticle(parsee);
     parsedTemplateExpression.push(particle);
@@ -225,12 +224,13 @@ function tryParseTemplateExpression(particleString) {
   return parsedTemplateExpression;
 }
 
-function parseTemplateExpression(particleString) {
+function parseTemplateExpression(templateExpression) {
+  const parsee = new Parsee(templateExpression);
   try {
-    return tryParseTemplateExpression(particleString);
+    return readTemplateExpression(parsee);
   } catch (e) {
     if (e instanceof InvalidTemplateExpression) {
-      e.expression = particleString;
+      e.expression = templateExpression;
     }
     throw e;
   }

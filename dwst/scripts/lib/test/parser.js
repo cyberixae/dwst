@@ -39,28 +39,28 @@ describe('parser module', () => {
     });
   });
   describe('parseTemplateExpression function', () => {
-    it('should parse a single default particle', () => {
-      const result = parseTemplateExpression('particle');
+    it('should parse text', () => {
+      const result = parseTemplateExpression('hello world');
       const expectedResult = [
-        {type: 'text', value: 'particle'},
+        {type: 'text', value: 'hello world'},
       ];
       expect(result).to.deep.equal(expectedResult);
     });
-    it('should parse a single named particle without parameters', () => {
+    it('should parse an embedded function without parameters', () => {
       const result = parseTemplateExpression('${function()}');
       const expectedResult = [
         {type: 'function', name: 'function', args: []},
       ];
       expect(result).to.deep.equal(expectedResult);
     });
-    it('should parse a single named particle with a single parameter', () => {
+    it('should parse an embedded function with one parameter', () => {
       const result = parseTemplateExpression('${function(123)}');
       const expectedResult = [
         {type: 'function', name: 'function', args: ['123']},
       ];
       expect(result).to.deep.equal(expectedResult);
     });
-    it('should parse a single named particle with two parameters', () => {
+    it('should parse an embedded function with two parameters', () => {
       const result = parseTemplateExpression('${function(123,abc)}');
       const expectedResult = [
         {type: 'function', name: 'function', args: ['123', 'abc']},
