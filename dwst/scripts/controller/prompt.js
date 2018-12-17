@@ -33,8 +33,11 @@ export default class PromptHandler {
   }
 
   _evalTemplateExpression(templateExpression) {
-    const parseTree = this._dwst.lib.parser.parseTemplateExpression(templateExpression);
-    const chunks = parseTree.map(node => {
+    const rootNode = this._dwst.lib.parser.parseTemplateExpression(templateExpression);
+    if (rootNode.type !== 'templateExpression') {
+      throw new Error('unexpected root node type');
+    }
+    const chunks = rootNode.particles.map(node => {
       if (node.type === 'text') {
         return this._encoder.encode(node.value);
       }
@@ -54,9 +57,9 @@ export default class PromptHandler {
         if (typeof output === 'string') {
           return this._encoder.encode(output);
         }
-        throw new Error('unexpected output type');
+        throw new Error('unexpected function return type');
       }
-      throw new Error(`unexpected template expression node type: ${node.type}`);
+      throw new Error('unexpected particle type');
     });
     const buffer = this._dwst.lib.utils.joinBuffers(chunks).buffer;
     return buffer;
