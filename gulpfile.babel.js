@@ -1,6 +1,4 @@
 
-/* global require */
-
 /**
 
   Authors: Toni Ruottu, Finland 2010-2018
@@ -14,29 +12,31 @@
 
 */
 
-const fs = require('fs');
-const path = require('path');
-const gulp = require('gulp');
-const gulpJsonlint = require('gulp-jsonlint');
-const gulpEslint = require('gulp-eslint');
-const gulpHtmlhint = require('gulp-htmlhint');
-const browserSync = require('browser-sync').create();
-const gulpClean = require('gulp-clean');
-const webpackStream = require('webpack-stream');
-const webpack2 = require('webpack');
-const fse = require('fs-extra');
-const postcss = require('gulp-postcss');
-const atImport = require('postcss-import');
-const sprites = require('postcss-sprites');
-const colorHexAlpha = require('postcss-color-hex-alpha');
-const discardComments = require('postcss-discard-comments');
-const sourcemaps = require('gulp-sourcemaps');
-const rename = require('gulp-rename');
-const gulpStylelint = require('gulp-stylelint');
-const autoprefixer = require('autoprefixer');
-const replace = require('gulp-replace');
-const gulpMocha = require('gulp-mocha');
-const styleguide = require('sc5-styleguide');
+import fs from 'fs';
+import path from 'path';
+import gulp from 'gulp';
+import gulpJsonlint from 'gulp-jsonlint';
+import gulpEslint from 'gulp-eslint';
+import gulpHtmlhint from 'gulp-htmlhint';
+import gulpClean from 'gulp-clean';
+import webpackStream from 'webpack-stream';
+import webpack2 from 'webpack';
+import fse from 'fs-extra';
+import postcss from 'gulp-postcss';
+import atImport from 'postcss-import';
+import sprites from 'postcss-sprites';
+import colorHexAlpha from 'postcss-color-hex-alpha';
+import discardComments from 'postcss-discard-comments';
+import sourcemaps from 'gulp-sourcemaps';
+import rename from 'gulp-rename';
+import gulpStylelint from 'gulp-stylelint';
+import autoprefixer from 'autoprefixer';
+import replace from 'gulp-replace';
+import gulpMocha from 'gulp-mocha';
+import styleguide from 'sc5-styleguide';
+import {create as bsCreate} from 'browser-sync';
+
+const browserSync = bsCreate();
 
 const jsRootFile = 'dwst.js';
 const swRootFile = 'service_worker.js';
