@@ -146,7 +146,7 @@ export const validate = gulp.parallel(jsonlint, eslint, stylelint, htmlhint);
 export function mocha() {
   return gulp.src('test/test.js', {read: false})
     .pipe(gulpMocha({
-      compilers: 'js:@babel/register',
+      require: '@babel/register',
     }));
 }
 
