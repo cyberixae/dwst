@@ -46,6 +46,9 @@
     "webpack": "^4.28.2",
     "webpack-stream": "^5.2.1"
   },
+  "resolutions": {
+    "sc5-styleguide/**/vinyl-fs": "^3.0.3"
+  },
   "babel": {
     "presets": [
       "@babel/preset-env"
