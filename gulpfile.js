@@ -286,10 +286,10 @@ gulp.task('replace-styleguide-favicon', () => {
 
 gulp.task('build-styleguide', gulp.series('styleguide:generate', 'styleguide:applystyles', 'replace-styleguide-favicon'));
 
-gulp.task('build-assets', gulp.series('build-js', 'build-css', 'build-html', 'build-images', 'build-manifest'));
+gulp.task('build-assets', gulp.series('build-js', 'build-styleguide', 'build-html', 'build-images', 'build-manifest'));
 
 gulp.task('create-symlinks', done => {
-  // fse.ensureSymlinkSync(targetPaths.styleguideHtmlRoot, targetPaths.styleguideHtmlLink);
+  fse.ensureSymlinkSync(targetPaths.styleguideHtmlRoot, targetPaths.styleguideHtmlLink);
   fse.ensureSymlinkSync(targetPaths.htmlRoot, targetPaths.htmlLink);
   fse.ensureSymlinkSync(targetPaths.serviceworkerRoot, targetPaths.serviceworkerLink);
   done();
@@ -308,11 +308,9 @@ gulp.task('dev', gulp.series('build', () => {
   gulp.watch(sourcePaths.html, gulp.series('build-html'));
   gulp.watch(sourcePaths.images, gulp.series('build-images'));
   gulp.watch(sourcePaths.scripts, gulp.series('build-js'));
-  /*
   gulp.watch(sourcePaths.css, gulp.series('build-styleguide'));
   gulp.watch(sourcePaths.sprites, gulp.series('build-styleguide'));
   gulp.watch(sourcePaths.cssReadme, gulp.series('build-styleguide'));
-  */
 }));
 
 gulp.task('default', gulp.series('build'));
