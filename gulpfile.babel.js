@@ -141,7 +141,7 @@ export function stylelint() {
     }));
 }
 
-export const validate = gulp.series(jsonlint, eslint, stylelint, htmlhint);
+export const validate = gulp.parallel(jsonlint, eslint, stylelint, htmlhint);
 
 export function mocha() {
   return gulp.src('test/test.js', {read: false})
@@ -150,7 +150,7 @@ export function mocha() {
     }));
 }
 
-export const test = gulp.series(validate, mocha);
+export const test = gulp.parallel(validate, mocha);
 
 export function clean() {
   return gulp.src(buildBase, {read: false})
@@ -284,9 +284,9 @@ export function replaceStyleguideFavicon() {
     .pipe(gulp.dest(path.join(targetDirs.styleguide, 'assets/img')));
 }
 
-export const buildStyleguide = gulp.series(styleguideGenerate, styleguideApplystyles, replaceStyleguideFavicon);
+export const buildStyleguide = gulp.series(gulp.parallel(styleguideGenerate, styleguideApplystyles), replaceStyleguideFavicon);
 
-export const buildAssets = gulp.series(buildJs, buildStyleguide, buildHtml, buildImages, buildManifest);
+export const buildAssets = gulp.parallel(buildJs, buildStyleguide, buildHtml, buildImages, buildManifest);
 
 export function createSymlinks(done) {
   fse.ensureSymlinkSync(targetPaths.styleguideHtmlRoot, targetPaths.styleguideHtmlLink);
