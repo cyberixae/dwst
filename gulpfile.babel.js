@@ -304,13 +304,13 @@ export const dev = gulp.series(build, () => {
       index: htmlRootLink,
     },
   });
-  gulp.watch(sourcePaths.manifest, gulp.series(buildManifest));
-  gulp.watch(sourcePaths.html, gulp.series(buildHtml));
-  gulp.watch(sourcePaths.images, gulp.series(buildImages));
-  gulp.watch(sourcePaths.scripts, gulp.series(buildJs));
-  gulp.watch(sourcePaths.css, gulp.series(buildStyleguide));
-  gulp.watch(sourcePaths.sprites, gulp.series(buildStyleguide));
-  gulp.watch(sourcePaths.cssReadme, gulp.series(buildStyleguide));
+  gulp.watch(sourcePaths.manifest, buildManifest);
+  gulp.watch(sourcePaths.html, buildHtml);
+  gulp.watch(sourcePaths.images, buildImages);
+  gulp.watch(sourcePaths.scripts, buildJs);
+  gulp.watch(sourcePaths.css, buildStyleguide);
+  gulp.watch(sourcePaths.sprites, buildStyleguide);
+  gulp.watch(sourcePaths.cssReadme, buildStyleguide);
 });
 
 export default build;
