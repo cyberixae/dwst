@@ -1,0 +1,61 @@
+path {
+  stroke-width: 2px !important;
+  stroke: #fff !important;
+  fill: #fdf !important;
+}
+g {
+/*
+*/
+}
+
+body {
+  display: flex;
+  cursor: crosshair;
+}
+
+.logo {
+  background-color: #222;
+  height: 56px;
+  width: 100px;
+  text-align: center;
+}
+
+img {
+  width: 96px;
+  height: 60px;
+  display: none;
+}
+
+.logo svg {
+  height: 54px;
+  position: relative;
+  top: -8px; 
+}
+.logo:hover {
+  cursor: pointer;
+}
+.logo:hover path {
+  stroke: #fbf !important;
+  fill: #d7d !important;
+}
+
+@keyframes animate {
+  0% {
+    filter: drop-shadow(0 0 4px #5f0);
+  }
+  100% {
+    filter: drop-shadow(0 0 6px #5f0);
+  }
+}
+
+
+.power g {
+  animation-name: animate;
+  animation-duration: 2s;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+}
+.power.logo:hover path {
+  stroke: #fff !important;
+  fill: #404 !important;
+}
