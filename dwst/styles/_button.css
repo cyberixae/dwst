@@ -71,21 +71,22 @@ Styleguide 2.4
 .dwst-button--splash path,
 .dwst-button--splash-connected path {
   fill: #fdf;
-  stroke: #fff;
+  stroke: #000;
   stroke-width: 2px;
+  paint-order: stroke fill;
 }
 
 .dwst-button--splash:hover path {
   fill: #d7d;
-  stroke: #fbf;
+  filter: drop-shadow(0 0 4px #fbf);
 }
 
 @keyframes dwst-logo-glow {
   0% {
-    filter: drop-shadow(0 0 4px #5f0);
+    filter: drop-shadow(0 0 8px #5f0);
   }
   100% {
-    filter: drop-shadow(0 0 6px #5f0);
+    filter: drop-shadow(0 0 14px #5f0);
   }
 }
 
@@ -94,6 +95,6 @@ Styleguide 2.4
 }
 
 .dwst-button--splash-connected:hover path {
-  fill: #404;
-  stroke: #fff;
+  fill: #d7d;
+  filter: drop-shadow(0 0 4px #fbf);
 }
