@@ -14,10 +14,6 @@
 import m from '../../types/m/m.js';
 import utils from '../../lib/utils.js';
 
-function hexify(num) {
-  return num.toString(16).padStart(2, '0');
-}
-
 function charify(num) {
   if (num > 0x7e || num < 0x20) {
     // non-printable
@@ -27,21 +23,12 @@ function charify(num) {
 }
 
 function* hexdump(buffer) {
-  const dv = new DataView(buffer);
-  let offset = 0;
-  while (offset < buffer.byteLength) {
-    let text = '';
-    const hexes = [];
-    for (let i = 0; i < 16; i++) {
-      if (offset < buffer.byteLength) {
-        const oneByte = dv.getUint8(offset);
-        const asChar = charify(oneByte);
-        const asHex = hexify(oneByte);
-        text += asChar;
-        hexes.push(asHex);
-      }
-      offset += 1;
-    }
+  const bytes = new Uint8Array(buffer);
+  for (let offset = 0; offset < bytes.length; offset += 16) {
+    const chunk = bytes.subarray(offset, offset + 16);
+    const hexStr = chunk.toHex();
+    const hexes = Array.from(chunk, (_, i) => hexStr.slice(i * 2, i * 2 + 2));
+    const text = Array.from(chunk, charify).join('');
     yield [hexes, text];
   }
 }
